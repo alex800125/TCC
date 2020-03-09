@@ -8,6 +8,7 @@ def create_database_images():
     known_image_path_2 = "../Known_Images/matheus.jpg"
     known_image_path_3 = "../Known_Images/alex.jpg"
     known_image_path_4 = "../Known_Images/leonardo.jpg"
+    known_image_path_5 = "../Known_Images/Paulo.png"
 
     known_image_1 = face_recognition.load_image_file(known_image_path_1)
     face_encoding_1 = face_recognition.face_encodings(known_image_1)[0]
@@ -25,6 +26,10 @@ def create_database_images():
     face_encoding_4 = face_recognition.face_encodings(known_image_4)[0]
     list_images.append(face_encoding_4)
 
+    known_image_5 = face_recognition.load_image_file(known_image_path_5)
+    face_encoding_5 = face_recognition.face_encodings(known_image_5)[0]
+    list_images.append(face_encoding_5)
+
     return list_images
 
 
@@ -33,7 +38,8 @@ def create_database_names():
         "Luan",
         "Matheus",
         "Alex",
-        "Leonardo"
+        "Leonardo",
+        "Paulo"
     ]
 
     return list_names

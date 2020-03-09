@@ -1,7 +1,9 @@
-import Database as Db
+from Src import Database as Db
 import face_recognition
 import cv2
 import numpy as np
+from playsound import playsound
+from gtts import gTTS
 
 
 def face_detection():
@@ -9,6 +11,7 @@ def face_detection():
     video_capture = cv2.VideoCapture(0)
 
     process_this_frame = True
+    process_tts = True
 
     print("criando banco para comparação")
     known_face_encodings = Db.create_database_images()
@@ -68,6 +71,15 @@ def face_detection():
             cv2.rectangle(image, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
             font = cv2.FONT_HERSHEY_DUPLEX
             cv2.putText(image, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+
+            print("reproduzindo audio")
+            if process_tts:
+                file_path = "../Recognized_Image/audio.mp3"
+                process_tts = False
+                string = "Oi " + name + "! Tudo bem com você?"
+                tts = gTTS(string, lang='pt-br')
+                tts.save(file_path)
+                playsound(file_path)
 
         # Display the resulting image
         cv2.imshow('Video', image)
