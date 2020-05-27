@@ -6,6 +6,10 @@ Para instalar os dados do requirements.txt
 
 Se acontecer algum erro na hora de instalar dlib, consultar
     https://github.com/ageitgey/face_recognition/issues/175
+    https://www.youtube.com/watch?v=pHrgi8QLcKk
 
 tutorial do face_regonition
     https://pypi.org/project/face-recognition/
+
+Pycharm - Cannot find declaration to go to
+    Right click on the folders where you believe relevant code is located ->Mark Directory as-> Sources Root
