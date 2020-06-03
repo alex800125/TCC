@@ -2,20 +2,18 @@ import Database as Db
 import face_recognition
 import cv2
 import numpy as np
-from playsound import playsound
-from gtts import gTTS
+
+# these variables are responsible for the server database
+known_face = Db.create_database_images()
+known_face_names = Db.create_database_names()
 
 
 def face_detection():
-
     video_capture = cv2.VideoCapture(0)
 
     process_this_frame = True
-    process_tts = True
-
-    print("criando banco para comparação")
-    known_face_encodings = Db.create_database_images()
-    known_face_names = Db.create_database_names()
+    retorno = []
+    find_face = False
 
     while True:
         ret, image = video_capture.read()
@@ -37,7 +35,7 @@ def face_detection():
             face_names = []
             for face_encoding in face_encodings:
                 # See if the face is a match for the known face(s)
-                matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+                matches = face_recognition.compare_faces(known_face, face_encoding)
                 name = "Unknown"
 
                 # # If a match was found in known_face_encodings, just use the first one.
@@ -46,7 +44,7 @@ def face_detection():
                 #     name = known_face_names[first_match_index]
 
                 # Or instead, use the known face with the smallest distance to the new face
-                face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
+                face_distances = face_recognition.face_distance(known_face, face_encoding)
                 best_match_index = np.argmin(face_distances)
                 if matches[best_match_index]:
                     name = known_face_names[best_match_index]
@@ -72,22 +70,23 @@ def face_detection():
             font = cv2.FONT_HERSHEY_DUPLEX
             cv2.putText(image, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
-            print("reproduzindo audio")
-            if process_tts:
-                file_path = "../Recognized_Image/audio.mp3"
-                process_tts = False
-                string = "Oi " + name + "! Tudo bem com você?"
-                tts = gTTS(string, lang='pt-br')
-                tts.save(file_path)
-                playsound(file_path)
+            print("armazenando imagem")
+            if name:
+                file_path = "../Recognized_Image/" + name + ".jpg"
+                cv2.imwrite(file_path, image)
 
-        # Display the resulting image
-        cv2.imshow('Video', image)
+                retorno.append({
+                    'name': name
+                })
+                find_face = True
 
-        # Hit 'q' on the keyboard to quit!
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if find_face:
             break
 
     # Release handle to the webcam
     video_capture.release()
     cv2.destroyAllWindows()
+
+    # Debug
+    print(retorno)
+    return retorno
