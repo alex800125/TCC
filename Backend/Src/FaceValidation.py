@@ -5,7 +5,7 @@ import numpy as np
 
 # these variables are responsible for the server database
 known_face = Db.create_database_images()
-known_face_names = Db.create_database_names()
+known_face_names = Db.select_all_customer()
 
 
 def face_detection():
