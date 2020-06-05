@@ -1,4 +1,5 @@
-from flask import Flask, jsonify
+import base64
+from flask import Flask, request, jsonify
 import datetime
 import FaceValidation
 import Database
@@ -11,7 +12,7 @@ def confirmation():
     return "Server ON."
 
 
-@app.route('/search', methods=['POST'])
+@app.route('/search', methods=['GET'])
 def search_customer():
     response = FaceValidation.face_detection()
     return jsonify(response)
@@ -19,8 +20,14 @@ def search_customer():
 
 @app.route('/create', methods=['POST'])
 def create_customer():
+    data = request.get_json()
+
+    image = base64.b64decode(data['image'])
+    name = data['name']
     birthday = datetime.date(1999, 1, 1)
-    response = Database.create_new_customer("teste", birthday)
+
+    response = Database.create_new_customer(name, birthday, image)
+
     return jsonify(response)
 
 

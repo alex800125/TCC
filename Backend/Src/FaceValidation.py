@@ -3,9 +3,8 @@ import face_recognition
 import cv2
 import numpy as np
 
-# these variables are responsible for the server database
-known_face = Db.create_database_images()
-known_face_names = Db.select_all_customer()
+Db.create_database_names()
+Db.create_database_images()
 
 
 def face_detection():
@@ -35,19 +34,14 @@ def face_detection():
             face_names = []
             for face_encoding in face_encodings:
                 # See if the face is a match for the known face(s)
-                matches = face_recognition.compare_faces(known_face, face_encoding)
+                matches = face_recognition.compare_faces(Db.get_list_images(), face_encoding)
                 name = "Unknown"
 
-                # # If a match was found in known_face_encodings, just use the first one.
-                # if True in matches:
-                #     first_match_index = matches.index(True)
-                #     name = known_face_names[first_match_index]
-
-                # Or instead, use the known face with the smallest distance to the new face
-                face_distances = face_recognition.face_distance(known_face, face_encoding)
+                # Use the known face with the smallest distance to the new face
+                face_distances = face_recognition.face_distance(Db.get_list_images(), face_encoding)
                 best_match_index = np.argmin(face_distances)
                 if matches[best_match_index]:
-                    name = known_face_names[best_match_index]
+                    name = Db.get_list_names()[best_match_index]
 
                 face_names.append(name)
 
