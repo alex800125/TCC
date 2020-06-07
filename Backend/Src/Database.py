@@ -88,7 +88,7 @@ def search_customer(id_customer):
 
 def search_last_purchase(id_customer):
     print("procurando ultima compra")
-    sql_query = "SELECT MAX(data), valor_total FROM Compras WHERE id_cliente = " + id_customer
+    sql_query = "SELECT MAX(data), valor_total, id FROM Compras WHERE id_cliente = " + id_customer
     retorno = []
 
     db = connect_mysql()
@@ -98,7 +98,25 @@ def search_last_purchase(id_customer):
     for x in cursor:
         retorno.append({
             'data': x[0],
-            'valor_total': x[1]
+            'valor_total': x[1],
+            'itens_comprados': search_produtos(x[2])
+        })
+    print(retorno)
+    return retorno
+
+
+def search_produtos(id_purchase):
+    print("procurando ultima compra")
+    sql_query = "SELECT Produtos.nome FROM Itens_comprados INNER JOIN Produtos ON Itens_comprados.id_produtos = Produtos.Id WHERE Itens_comprados.id_compras = " + str(id_purchase)
+    retorno = []
+
+    db = connect_mysql()
+    cursor = db.cursor()
+    cursor.execute(sql_query)
+
+    for x in cursor:
+        retorno.append({
+            'item': x[0]
         })
     print(retorno)
     return retorno
