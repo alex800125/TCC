@@ -3,8 +3,8 @@ import face_recognition
 import cv2
 import numpy as np
 
-Db.create_database_names()
-Db.create_database_images()
+Db.load_database_customer_id()
+Db.load_database_images()
 
 
 def face_detection():
@@ -31,25 +31,24 @@ def face_detection():
             face_encodings = face_recognition.face_encodings(unknown_image, face_locations)
 
             print("atribuindo o nome a cada face reconhecida")
-            face_names = []
+            face_id = []
             for face_encoding in face_encodings:
                 # See if the face is a match for the known face(s)
                 matches = face_recognition.compare_faces(Db.get_list_images(), face_encoding)
-                name = "Unknown"
 
                 # Use the known face with the smallest distance to the new face
                 face_distances = face_recognition.face_distance(Db.get_list_images(), face_encoding)
                 best_match_index = np.argmin(face_distances)
                 if matches[best_match_index]:
-                    name = Db.get_list_names()[best_match_index]
-
-                face_names.append(name)
+                    id = Db.get_list_id_customes()[best_match_index]
+                    face_id.append(id)
 
         process_this_frame = not process_this_frame
 
         print("criando imagem com marcações")
         # Display the results
-        for (top, right, bottom, left), name in zip(face_locations, face_names):
+        for (top, right, bottom, left), id in zip(face_locations, face_id):
+            name = Db.search_customer(id)
             # Scale back up face locations since the frame we detected in was scaled to 1/4 size
             top *= 4
             right *= 4
@@ -70,7 +69,8 @@ def face_detection():
                 cv2.imwrite(file_path, image)
 
                 retorno.append({
-                    'name': name
+                    'name': name,
+                    'ultima_compra': Db.search_last_purchase(id)
                 })
                 find_face = True
 
