@@ -13,18 +13,3 @@ tutorial do face_regonition
 
 Pycharm - Cannot find declaration to go to
     Right click on the folders where you believe relevant code is located ->Mark Directory as-> Sources Root
-
-MySQL CREATE TABLE (só utilizar uma unica vez)
-    mycursor.execute("CREATE DATABASE TESTE;")
-    mycursor.execute("CREATE TABLE Customer (" +
-                     "id INT AUTO_INCREMENT PRIMARY KEY," +
-                     "name VARCHAR(255) NOT NULL," +
-                     "birthday DATE NOT NULL)"
-                     );
-
-Popular banco
-    Database.create_new_customer("Leonardo", birthday)
-    Database.create_new_customer("Luan", birthday)
-    Database.create_new_customer("Matheus", birthday)
-    Database.create_new_customer("Paulo", birthday)
-    Database.create_new_customer("Alex", birthday)
