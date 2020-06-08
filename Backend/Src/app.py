@@ -24,11 +24,16 @@ def create_customer():
 
     image = base64.b64decode(data['image'])
     name = data['name']
-    birthday = datetime.date(1999, 1, 1)
-
-    response = Database.create_new_customer(name, birthday, image)
+    cpf = data['cpf']
+    birthday = str(data['birthday'])
+    response = Database.create_new_customer(name, cpf, birthday, image)
 
     return jsonify(response)
+
+
+@app.route('/edit', methods=['POST'])
+def edit_customer():
+    return jsonify({'status': 'Missing Edit'})
 
 
 if __name__ == "__main__":
