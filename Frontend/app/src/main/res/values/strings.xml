@@ -3,6 +3,9 @@
 
     <string name="title_search">Search</string>
     <string name="text_search">Search a customer</string>
+    <string name="text_name">Name:</string>
+    <string name="text_age">Age:</string>
+    <string name="text_suggestion">Suggestion:</string>
 
     <string name="title_create">New customer</string>
     <string name="text_create">Create a new customer profile</string>

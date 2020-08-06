@@ -1,14 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/holo_red_light">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="@string/text_search"
-        android:textSize="30sp" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-</RelativeLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/margin_bottom">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/preview_image"
+                android:layout_width="@dimen/image_size"
+                android:layout_height="@dimen/image_size"
+                android:src="@drawable/teste"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Name -->
+            <TextView
+                android:id="@+id/name_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_top"
+                android:text="@string/text_name"
+                android:textSize="@dimen/txt_font_size"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/preview_image" />
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_txt_item_start"
+                android:layout_marginTop="@dimen/margin_txt_top"
+                android:text="@string/text_name"
+                android:textSize="@dimen/txt_item_font_size"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/name_txt" />
+
+            <!-- Age -->
+            <TextView
+                android:id="@+id/age_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_top"
+                android:text="@string/text_age"
+                android:textSize="@dimen/txt_font_size"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/name" />
+
+            <TextView
+                android:id="@+id/age"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_txt_item_start"
+                android:layout_marginTop="@dimen/margin_txt_top"
+                android:text="@string/text_age"
+                android:textSize="@dimen/txt_item_font_size"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/age_txt" />
+
+            <!-- Suggestion -->
+            <TextView
+                android:id="@+id/suggestion_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_top"
+                android:text="@string/text_suggestion"
+                android:textSize="@dimen/txt_font_size"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/age" />
+
+            <TextView
+                android:id="@+id/suggestion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_txt_item_start"
+                android:layout_marginTop="@dimen/margin_txt_top"
+                android:text="@string/text_suggestion"
+                android:textSize="@dimen/txt_item_font_size"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/suggestion_txt" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
