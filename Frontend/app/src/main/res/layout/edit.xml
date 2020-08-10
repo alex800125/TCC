@@ -11,4 +11,6 @@
         android:text="@string/text_edit"
         android:textSize="30sp" />
 
+    <!-- TODO Atualizar para ficar parecido com o Create -->
+
 </RelativeLayout>

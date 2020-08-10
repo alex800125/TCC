@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- TODO Rever itens usados -->
+
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+
+    <!-- Black 60% opacity -->
+    <color name="colorAccent">#99000000</color>
 </resources>
