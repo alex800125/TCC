@@ -1,21 +1,29 @@
 <resources>
-    <!-- TODO Rever itens usados e nome da aplicação -->
+    <string name="app_name">Helping salespeople</string>
 
-    <string name="app_name">To be defined</string>
-
+    <!-- Tab titles -->
     <string name="title_search">Search</string>
+    <string name="title_create">New customer</string>
+    <string name="title_edit">Edit a profile</string>
+
+    <!-- Search -->
     <string name="search_text_name">Name:</string>
     <string name="search_text_age">Age:</string>
     <string name="search_text_suggestion">Suggestion:</string>
+    <string name="search_customer">Search a customer!</string>
 
+    <!-- Create -->
     <string name="create_text_name">Name</string>
     <string name="create_text_birthday">Birthday</string>
     <string name="create_text_cpf">CPF</string>
     <string name="create_new_customer">Send info to create!</string>
 
-    <string name="title_create">New customer</string>
-    <string name="text_create">Create a new customer profile</string>
+    <!-- Edit -->
+    <string name="edit_text_name">Name</string>
+    <string name="edit_text_birthday">Birthday</string>
+    <string name="edit_text_cpf">CPF</string>
+    <string name="edit_new_customer">Send info to edit!</string>
 
-    <string name="title_edit">Edit a profile</string>
-    <string name="text_edit">Edit a customer profile</string>
+    <!-- Generic use -->
+    <string name="take_picture">Take a picture!</string>
 </resources>
