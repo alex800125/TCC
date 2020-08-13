@@ -10,7 +10,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -68,31 +67,40 @@ public class ConnectServerUtils {
     }
 
     private static Customer convertJsonToCustomer(final String jsonString) {
-        final List<Customer> customers = new ArrayList<Customer>();
+        Customer customer = new Customer();
         JSONObject customerJson;
+        JSONArray customerJsonLastPurchaseItems;
+        ArrayList<String> lastPurchaseList = new ArrayList<>();
 
         try {
+            Log.d("teste", "começou");
             JSONArray json = new JSONArray(jsonString);
+            customerJson = new JSONObject(json.getString(0));
 
-            for (int i = 0; i < json.length(); i++) {
-                customerJson = new JSONObject(json.getString(i));
+            customer.setName(customerJson.getString("name"));
+            customer.setBirthday(customerJson.getString("age"));
+            customer.setLastPurchaseDate(customerJson.getString("ultima_compra_data"));
+            customer.setLastPurchaseValue(customerJson.getString("ultima_compra_valor"));
 
-                Customer customer = new Customer();
-                customer.setName(customerJson.getString("name"));
-                customer.setBirthday(customerJson.getString("age"));
-
-                // TODO terminar de criar para os dados sugeridos
-//                byte[] decodedString = Base64.decode(customerJson.getString("image"), Base64.DEFAULT);
-//                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-//                customer.setImage(decodedByte);
-
-                customers.add(customer);
+            customerJsonLastPurchaseItems = new JSONArray(customerJson.getString("itens_comprados"));
+            for (int i = 0; i < customerJsonLastPurchaseItems.length(); i++) {
+                JSONObject items = new JSONObject(customerJsonLastPurchaseItems.getString(i));
+                lastPurchaseList.add(items.getString("item"));
             }
 
+            customer.setLastPurchaseList(lastPurchaseList);
+
+            // TODO falta carregar imagem vinda do servidor
+
+            // TODO terminar de criar para os dados sugeridos
+            // testes:
+            // byte[] decodedString = Base64.decode(customerJson.getString("image"), Base64.DEFAULT);
+            // Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            // customer.setImage(decodedByte);
         } catch (JSONException e) {
             Log.e(TAG, "Error in convertJsonToCustomer: ", e);
         }
 
-        return customers.get(0);
+        return customer;
     }
 }

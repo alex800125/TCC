@@ -87,8 +87,8 @@ def search_customer(id_customer):
         return str(x[0])
 
 
-def search_last_purchase(id_customer):
-    print("procurando ultima compra")
+def create_json(id_customer, name):
+    print("criando JSON de retorno")
     sql_query = "SELECT MAX(data), valor_total, id FROM Compras WHERE id_cliente = " + id_customer
     retorno = []
 
@@ -98,11 +98,12 @@ def search_last_purchase(id_customer):
 
     for x in cursor:
         retorno.append({
-            'data': x[0],
-            'valor_total': x[1],
+            'name': name,
+            'age': get_age_customer(id_customer),
+            'ultima_compra_data': str(x[0]),
+            'ultima_compra_valor': x[1],
             'itens_comprados': search_produtos(x[2])
         })
-    print(retorno)
     return retorno
 
 
@@ -133,7 +134,6 @@ def get_age_customer(id_customer):
     cursor.execute(sql_query)
 
     for x in cursor:
-        print(x[0])
         return num_years(x[0])
 
 
@@ -160,7 +160,6 @@ def yearsago(years, from_date=None):
 def num_years(begin, end=None):
     if end is None:
         end = datetime.now().date()
-        print(end)
     num_years = int((end - begin).days / 365.25)
     if begin > yearsago(num_years, end):
         return num_years - 1

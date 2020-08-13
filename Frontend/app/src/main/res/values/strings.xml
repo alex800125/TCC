@@ -9,8 +9,11 @@
     <!-- Search -->
     <string name="search_text_name">Name:</string>
     <string name="search_text_age">Age:</string>
-    <string name="search_text_suggestion">Suggestion:</string>
+    <string name="search_text_suggestion">Item suggestion:</string>
     <string name="search_customer">Search a customer!</string>
+    <string name="search_text_last_purchase">Last purchase:</string>
+    <string name="search_text_last_purchase_total">Total</string>
+    <string name="search_text_last_purchase_date">Date</string>
 
     <!-- Create -->
     <string name="create_text_name">Name</string>

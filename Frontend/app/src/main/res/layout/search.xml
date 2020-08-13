@@ -67,6 +67,51 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/search_age_txt" />
 
+            <!-- Last Buy -->
+            <TextView
+                android:id="@+id/search_last_buy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_top"
+                android:text="@string/search_text_last_purchase"
+                android:textSize="@dimen/txt_font_size"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_age" />
+
+            <TextView
+                android:id="@+id/search_last_buy_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_txt_item_start"
+                android:layout_marginTop="@dimen/margin_txt_top"
+                android:text="@string/search_text_last_purchase_date"
+                android:textSize="@dimen/txt_item_font_size"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_last_buy" />
+
+            <TextView
+                android:id="@+id/search_last_buy_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_txt_item_start"
+                android:layout_marginTop="@dimen/margin_txt_top"
+                android:text="@string/search_text_last_purchase_total"
+                android:textSize="@dimen/txt_item_font_size"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_last_buy_date" />
+
+            <com.example.frontend.NonScrollListView
+                android:id="@+id/search_last_buy_list"
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginStart="@dimen/margin_txt_item_start"
+                android:layout_marginTop="@dimen/margin_txt_top"
+                android:layout_marginEnd="@dimen/margin_txt_item_start"
+                android:background="@drawable/border_bg"
+                android:nestedScrollingEnabled="false"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_last_buy_value" />
+
             <!-- Suggestion -->
             <TextView
                 android:id="@+id/search_suggestion_txt"
@@ -76,18 +121,20 @@
                 android:text="@string/search_text_suggestion"
                 android:textSize="@dimen/txt_font_size"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/search_age" />
+                app:layout_constraintTop_toBottomOf="@id/search_last_buy_list" />
 
-            <TextView
-                android:id="@+id/search_suggestion"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <com.example.frontend.NonScrollListView
+                android:id="@+id/search_suggestion_list"
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
                 android:layout_marginStart="@dimen/margin_txt_item_start"
                 android:layout_marginTop="@dimen/margin_txt_top"
-                android:text="@string/search_text_suggestion"
-                android:textSize="@dimen/txt_item_font_size"
+                android:layout_marginEnd="@dimen/margin_txt_item_start"
+                android:background="@drawable/border_bg"
+                android:nestedScrollingEnabled="false"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/search_suggestion_txt" />
+
 
             <Button
                 android:id="@+id/search_button"
@@ -97,7 +144,7 @@
                 android:text="@string/search_customer"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/search_suggestion" />
+                app:layout_constraintTop_toBottomOf="@id/search_suggestion_list" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

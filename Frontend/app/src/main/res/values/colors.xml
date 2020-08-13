@@ -7,4 +7,7 @@
 
     <!-- Black 60% opacity -->
     <color name="colorAccent">#99000000</color>
+
+    <!-- Transparent -->
+    <color name="ColorTransparent">#00000000</color>
 </resources>

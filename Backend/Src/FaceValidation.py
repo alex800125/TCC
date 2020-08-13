@@ -75,11 +75,8 @@ def face_detection():
                 #     imageSha256 = hashlib.sha256(imageBase64.rstrip()).hexdigest()
                 #     hashlib.sha256(imageBase64.encode()).hexdigest()
 
-                retorno.append({
-                    'name': name,
-                    'age': Db.get_age_customer(id),
-                    'ultima_compra': Db.search_last_purchase(id)
-                })
+                retorno = Db.create_json(id, name)
+
                 find_face = True
 
         if find_face:
