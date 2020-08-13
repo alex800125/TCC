@@ -2,6 +2,8 @@ import Database as Db
 import face_recognition
 import cv2
 import numpy as np
+import base64
+import hashlib
 
 Db.load_database_customer_id()
 Db.load_database_images()
@@ -68,8 +70,14 @@ def face_detection():
                 file_path = "../Recognized_Image/" + name + ".jpg"
                 cv2.imwrite(file_path, image)
 
+                # with open(file_path, "rb") as img_file:
+                #     imageBase64 = base64.b64encode(img_file.read())
+                #     imageSha256 = hashlib.sha256(imageBase64.rstrip()).hexdigest()
+                #     hashlib.sha256(imageBase64.encode()).hexdigest()
+
                 retorno.append({
                     'name': name,
+                    'age': Db.get_age_customer(id),
                     'ultima_compra': Db.search_last_purchase(id)
                 })
                 find_face = True

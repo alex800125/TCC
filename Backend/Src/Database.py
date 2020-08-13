@@ -1,6 +1,7 @@
 import os
 import face_recognition
 import mysql.connector
+from datetime import datetime
 
 list_images = []
 list_id_customers = []
@@ -107,7 +108,8 @@ def search_last_purchase(id_customer):
 
 def search_produtos(id_purchase):
     print("procurando ultima compra")
-    sql_query = "SELECT Produtos.nome FROM Itens_comprados INNER JOIN Produtos ON Itens_comprados.id_produtos = Produtos.Id WHERE Itens_comprados.id_compras = " + str(id_purchase)
+    sql_query = "SELECT Produtos.nome FROM Itens_comprados INNER JOIN Produtos ON Itens_comprados.id_produtos = Produtos.Id WHERE Itens_comprados.id_compras = " + str(
+        id_purchase)
     retorno = []
 
     db = connect_mysql()
@@ -122,9 +124,45 @@ def search_produtos(id_purchase):
     return retorno
 
 
+def get_age_customer(id_customer):
+    print("pegando idade cliente")
+    sql_query = "SELECT data_nascimento FROM Clientes WHERE id = " + id_customer
+
+    db = connect_mysql()
+    cursor = db.cursor()
+    cursor.execute(sql_query)
+
+    for x in cursor:
+        print(x[0])
+        return num_years(x[0])
+
+
 def get_list_images():
     return list_images
 
 
 def get_list_id_customes():
     return list_id_customers
+
+
+def yearsago(years, from_date=None):
+    if from_date is None:
+        from_date = datetime.now()
+    try:
+        return from_date.replace(year=from_date.year - years)
+    except:
+        # Must be 2/29!
+        assert from_date.month == 2 and from_date.day == 29  # can be removed
+        return from_date.replace(month=2, day=28,
+                                 year=from_date.year - years)
+
+
+def num_years(begin, end=None):
+    if end is None:
+        end = datetime.now().date()
+        print(end)
+    num_years = int((end - begin).days / 365.25)
+    if begin > yearsago(num_years, end):
+        return num_years - 1
+    else:
+        return num_years
