@@ -66,6 +66,68 @@ public class ConnectServerUtils {
         });
     }
 
+//    TODO descomentar quando estiver finalizado
+//    static void postRequest(final Activity activity, final String URL, final Customer customer) {
+//        createJson(customer);
+//        OkHttpClient okHttpClient = new OkHttpClient();
+//        Request request = new Request
+//                .Builder()
+//                .post()
+//                .url(URL)
+//                .build();
+//        okHttpClient.newCall(request).enqueue(new Callback() {
+//            @Override
+//            public void onFailure(final Call call, final IOException e) {
+//                activity.runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Log.d(TAG, "postRequest: onFailure");
+//                        Toast.makeText(activity, "Something went wrong:" + " " + e.getMessage(), Toast.LENGTH_SHORT).show();
+//                        call.cancel();
+//                    }
+//                });
+//
+//            }
+//
+//            @Override
+//            public void onResponse(Call call, final Response response) throws IOException {
+//                activity.runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        if (response.isSuccessful()) {
+//
+//                            try {
+//                                Log.d(TAG, "postRequest: onResponse");
+//                                String responseString = response.body().string();
+//                                Search.updateCustomer(convertJsonToCustomer(responseString));
+//                            } catch (IOException e) {
+//                                e.printStackTrace();
+//                            }
+//                        } else {
+//                            Log.d(TAG, "postRequest: onResponse: response is failed");
+//                        }
+//                    }
+//                });
+//            }
+//        });
+//    }
+
+    //    TODO json criado porém ainda não foi testado
+    private JSONObject convertCustomerToJson(Customer customer) {
+        JSONObject customerJson = new JSONObject();
+        try {
+//            TODO terminar de converter a image para base64
+            customerJson.put("image", customer.getImage());
+            customerJson.put("name", customer.getName());
+            customerJson.put("cpf", customer.getCpf());
+            customerJson.put("birthday", customer.getBirthday());
+
+        } catch (JSONException e) {
+            Log.e(TAG, "Error in createJson: ", e);
+        }
+        return customerJson;
+    }
+
     private static Customer convertJsonToCustomer(final String jsonString) {
         Customer customer = new Customer();
         JSONObject customerJson;
@@ -73,7 +135,6 @@ public class ConnectServerUtils {
         ArrayList<String> lastPurchaseList = new ArrayList<>();
 
         try {
-            Log.d("teste", "começou");
             JSONArray json = new JSONArray(jsonString);
             customerJson = new JSONObject(json.getString(0));
 
@@ -89,8 +150,6 @@ public class ConnectServerUtils {
             }
 
             customer.setLastPurchaseList(lastPurchaseList);
-
-            // TODO falta carregar imagem vinda do servidor
 
             // TODO terminar de criar para os dados sugeridos
             // testes:

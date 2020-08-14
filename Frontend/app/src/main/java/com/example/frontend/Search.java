@@ -1,5 +1,6 @@
 package com.example.frontend;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,27 +13,28 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatImageView;
 import androidx.fragment.app.Fragment;
 
-import java.util.ArrayList;
-
 public class Search extends Fragment {
-    private View mView;
+    @SuppressLint("StaticFieldLeak")
     private static Activity mActivity;
 
-    private static AppCompatImageView mSearchPreviewImage;
+//    private static AppCompatImageView mSearchPreviewImage;
+    @SuppressLint("StaticFieldLeak")
     private static TextView mSearchName;
+    @SuppressLint("StaticFieldLeak")
     private static TextView mSearchAge;
+    @SuppressLint("StaticFieldLeak")
     private static TextView mLastPurchaseValue;
+    @SuppressLint("StaticFieldLeak")
     private static TextView mLastPurchaseDate;
+    @SuppressLint("StaticFieldLeak")
     private static ListView mListViewLastPurchase;
+    @SuppressLint("StaticFieldLeak")
     private static ListView mListViewSuggestion;
 
-    private View mButtonTakePicture;
-
     // for this link to work, ngrok must be active and the link must be updated
-    final private static String URL_SEARCH = Constants.URL_NGROK + "search";
+    final private static String URL_SEARCH = Constants.URL_NGROK + "/search";
 
     private final static String TAG = "Search";
 
@@ -42,22 +44,22 @@ public class Search extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.search, container, false);
-        this.mView = view;
         mActivity = getActivity();
 
-        mButtonTakePicture = mView.findViewById(R.id.search_button);
-        mSearchPreviewImage = mView.findViewById(R.id.search_preview_image);
-        mSearchName = mView.findViewById(R.id.search_name);
-        mSearchAge = mView.findViewById(R.id.search_age);
-        mLastPurchaseDate = mView.findViewById(R.id.search_last_buy_date);
-        mLastPurchaseValue = mView.findViewById(R.id.search_last_buy_value);
-        mListViewLastPurchase = mView.findViewById(R.id.search_last_buy_list);
-        mListViewSuggestion = mView.findViewById(R.id.search_suggestion_list);
+        View mButtonTakePicture = view.findViewById(R.id.search_button);
+        // TODO carregar imagem vinda do Servidor
+        // mSearchPreviewImage = mView.findViewById(R.id.search_preview_image);
+        mSearchName = view.findViewById(R.id.search_name);
+        mSearchAge = view.findViewById(R.id.search_age);
+        mLastPurchaseDate = view.findViewById(R.id.search_last_buy_date);
+        mLastPurchaseValue = view.findViewById(R.id.search_last_buy_value);
+        mListViewLastPurchase = view.findViewById(R.id.search_last_buy_list);
+        mListViewSuggestion = view.findViewById(R.id.search_suggestion_list);
 
         ArrayAdapter adapterLastPurchase = new ArrayAdapter<>(mActivity, R.layout.search_list_last_purchase, emptyArray);
         mListViewLastPurchase.setAdapter(adapterLastPurchase);
 
-        ArrayAdapter adapterSuggestion = new ArrayAdapter<String>(mActivity, R.layout.search_list_last_purchase, emptyArray);
+        ArrayAdapter adapterSuggestion = new ArrayAdapter<>(mActivity, R.layout.search_list_last_purchase, emptyArray);
         mListViewSuggestion.setAdapter(adapterSuggestion);
 
         mButtonTakePicture.setOnClickListener(new View.OnClickListener() {

@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,9 +17,15 @@ import androidx.fragment.app.Fragment;
 
 public class Create extends Fragment {
 
+    final private static String URL_SEARCH = Constants.URL_NGROK + "/create";
     static final int REQUEST_IMAGE_CAPTURE = 0;
 
-    private AppCompatImageView image;
+    private AppCompatImageView mCreatePreviewImage;
+    private TextView mCreateName;
+    private TextView mCreateBirthday;
+    private TextView mCreateCpf;
+
+    private Bitmap mPreviewImageBitmap;
 
     @Nullable
     @Override
@@ -26,7 +33,10 @@ public class Create extends Fragment {
         final View view = inflater.inflate(R.layout.create, container, false);
         final View buttonCreate = view.findViewById(R.id.button_create_customer);
         final View buttonTakePicture = view.findViewById(R.id.create_button_take_picture);
-        image = view.findViewById(R.id.create_preview_image);
+        mCreatePreviewImage = view.findViewById(R.id.create_preview_image);
+        mCreateName = view.findViewById(R.id.search_name);
+        mCreateBirthday = view.findViewById(R.id.search_age);
+        mCreateCpf = view.findViewById(R.id.search_age);
 
         buttonCreate.setOnClickListener(
                 new View.OnClickListener() {
@@ -48,7 +58,12 @@ public class Create extends Fragment {
     }
 
     private void createCustomer(View v) {
-        // TODO implementar chamada para o servidor em Python
+        // TODO falta a parte para chamar a função no ConnectServerUtils (está crashando atualmente)
+        Customer customer = new Customer();
+        customer.setImage(mPreviewImageBitmap);
+        customer.setName(mCreateName.getText().toString());
+        customer.setBirthday(mCreateBirthday.getText().toString());
+        customer.setCpf(mCreateCpf.getText().toString());
         Log.d("TAG", "createCustomer: implement call to Server");
     }
 
@@ -62,8 +77,8 @@ public class Create extends Fragment {
         if (data != null) {
             Bundle extras = data.getExtras();
             if (extras != null) {
-                Bitmap imageBitmap = (Bitmap) extras.get("data");
-                image.setImageBitmap(imageBitmap);
+                mPreviewImageBitmap = (Bitmap) extras.get("data");
+                mCreatePreviewImage.setImageBitmap(mPreviewImageBitmap);
             }
         }
     }
