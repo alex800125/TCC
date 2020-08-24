@@ -2,8 +2,7 @@
 <shape xmlns:Android="http://schemas.android.com/apk/res/android"
     Android:shape="rectangle">
     <solid Android:color="@color/colorTransparent" />
-    <corners Android:radius="@dimen/list_view_radius" />
     <stroke
-        Android:width="@dimen/list_view_border_width"
-        Android:color="@color/colorAccent" />
+        Android:width="@dimen/border_width_error"
+        Android:color="@color/errorColor" />
 </shape>

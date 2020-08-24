@@ -9,5 +9,8 @@
     <color name="colorAccent">#99000000</color>
 
     <!-- Transparent -->
-    <color name="ColorTransparent">#00000000</color>
+    <color name="colorTransparent">#00000000</color>
+
+    <!-- Red error color -->
+    <color name="errorColor">#E30505</color>
 </resources>

@@ -13,8 +13,10 @@ import java.util.ArrayList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ConnectServerUtils {
@@ -26,6 +28,53 @@ public class ConnectServerUtils {
         Request request = new Request
                 .Builder()
                 .get()
+                .url(URL)
+                .build();
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(final Call call, final IOException e) {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "getRequest: onFailure");
+                        Toast.makeText(activity, "Something went wrong:" + " " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        call.cancel();
+                    }
+                });
+
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (response.isSuccessful()) {
+
+                            try {
+                                Log.d(TAG, "getRequest: isSuccessful");
+                                // TODO não consegue receber imagem em base 64 com essa função
+                                String responseString = response.body().string();
+                                Search.updateCustomer(convertJsonToCustomer(responseString));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            Log.d(TAG, "getRequest: onResponse: response is failed");
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    static void postRequest(final Activity activity, final String URL, final Customer customer) {
+        JSONObject customerJson = convertCustomerToJson(customer);
+        RequestBody body = RequestBody.create(MediaType.parse("application/json"), String.valueOf(customerJson));
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request request = new Request
+                .Builder()
+                .post(body)
                 .url(URL)
                 .build();
         okHttpClient.newCall(request).enqueue(new Callback() {
@@ -48,15 +97,8 @@ public class ConnectServerUtils {
                     @Override
                     public void run() {
                         if (response.isSuccessful()) {
-
-                            try {
-                                Log.d(TAG, "postRequest: onResponse");
-                                // TODO não consegue receber imagem em base 64 com essa função
-                                String responseString = response.body().string();
-                                Search.updateCustomer(convertJsonToCustomer(responseString));
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                            Log.d(TAG, "postRequest: isSuccessful");
+                            Create.UpdateLabels();
                         } else {
                             Log.d(TAG, "postRequest: onResponse: response is failed");
                         }
@@ -66,58 +108,11 @@ public class ConnectServerUtils {
         });
     }
 
-//    TODO descomentar quando estiver finalizado
-//    static void postRequest(final Activity activity, final String URL, final Customer customer) {
-//        createJson(customer);
-//        OkHttpClient okHttpClient = new OkHttpClient();
-//        Request request = new Request
-//                .Builder()
-//                .post()
-//                .url(URL)
-//                .build();
-//        okHttpClient.newCall(request).enqueue(new Callback() {
-//            @Override
-//            public void onFailure(final Call call, final IOException e) {
-//                activity.runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        Log.d(TAG, "postRequest: onFailure");
-//                        Toast.makeText(activity, "Something went wrong:" + " " + e.getMessage(), Toast.LENGTH_SHORT).show();
-//                        call.cancel();
-//                    }
-//                });
-//
-//            }
-//
-//            @Override
-//            public void onResponse(Call call, final Response response) throws IOException {
-//                activity.runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        if (response.isSuccessful()) {
-//
-//                            try {
-//                                Log.d(TAG, "postRequest: onResponse");
-//                                String responseString = response.body().string();
-//                                Search.updateCustomer(convertJsonToCustomer(responseString));
-//                            } catch (IOException e) {
-//                                e.printStackTrace();
-//                            }
-//                        } else {
-//                            Log.d(TAG, "postRequest: onResponse: response is failed");
-//                        }
-//                    }
-//                });
-//            }
-//        });
-//    }
-
     //    TODO json criado porém ainda não foi testado
-    private JSONObject convertCustomerToJson(Customer customer) {
+    private static JSONObject convertCustomerToJson(Customer customer) {
         JSONObject customerJson = new JSONObject();
         try {
-//            TODO terminar de converter a image para base64
-            customerJson.put("image", customer.getImage());
+            customerJson.put("image", Utils.convert(customer.getImage()));
             customerJson.put("name", customer.getName());
             customerJson.put("cpf", customer.getCpf());
             customerJson.put("birthday", customer.getBirthday());
