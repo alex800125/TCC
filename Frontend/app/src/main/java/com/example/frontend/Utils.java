@@ -1,5 +1,7 @@
 package com.example.frontend;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
@@ -8,6 +10,8 @@ import java.io.ByteArrayOutputStream;
 import java.util.InputMismatchException;
 
 public class Utils {
+
+    private static ProgressDialog dialog;
 
     // TODO this function is not yet being used
     public static boolean cpfValidade(String CPF) {
@@ -80,5 +84,17 @@ public class Utils {
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
 
         return Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT);
+    }
+
+    public static void startLoadingScreen(Activity activity) {
+        dialog = new ProgressDialog(activity);
+        dialog.setMessage("loading...");
+        dialog.setCancelable(false);
+        dialog.setInverseBackgroundForced(false);
+        dialog.show();
+    }
+
+    public static void removeLoadingScreen() {
+        dialog.hide();
     }
 }

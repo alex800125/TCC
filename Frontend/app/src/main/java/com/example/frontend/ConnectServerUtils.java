@@ -23,7 +23,8 @@ public class ConnectServerUtils {
 
     private final static String TAG = "ConnectServerUtils";
 
-    static void getRequest(final Activity activity, final String URL) {
+    static void getRequestSearch(final Activity activity, final String URL) {
+        Utils.startLoadingScreen(activity);
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request
                 .Builder()
@@ -39,6 +40,7 @@ public class ConnectServerUtils {
                         Log.d(TAG, "getRequest: onFailure");
                         Toast.makeText(activity, "Something went wrong:" + " " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         call.cancel();
+                        Utils.removeLoadingScreen();
                     }
                 });
 
@@ -55,7 +57,8 @@ public class ConnectServerUtils {
                                 Log.d(TAG, "getRequest: isSuccessful");
                                 // TODO não consegue receber imagem em base 64 com essa função
                                 String responseString = response.body().string();
-                                Search.updateCustomer(convertJsonToCustomer(responseString));
+                                Search.updateCustomer(convertJsonToCustomer(responseString, true));
+                                Utils.removeLoadingScreen();
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -68,7 +71,8 @@ public class ConnectServerUtils {
         });
     }
 
-    static void postRequest(final Activity activity, final String URL, final Customer customer) {
+    static void postRequestCreate(final Activity activity, final String URL, final Customer customer, final boolean isCreate) {
+        Utils.startLoadingScreen(activity);
         JSONObject customerJson = convertCustomerToJson(customer);
         RequestBody body = RequestBody.create(MediaType.parse("application/json"), String.valueOf(customerJson));
         OkHttpClient okHttpClient = new OkHttpClient();
@@ -86,19 +90,29 @@ public class ConnectServerUtils {
                         Log.d(TAG, "postRequest: onFailure");
                         Toast.makeText(activity, "Something went wrong:" + " " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         call.cancel();
+                        Utils.removeLoadingScreen();
                     }
                 });
 
             }
 
             @Override
-            public void onResponse(Call call, final Response response) throws IOException {
+            public void onResponse(Call call, final Response response) {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (response.isSuccessful()) {
                             Log.d(TAG, "postRequest: isSuccessful");
-                            Create.UpdateLabels();
+                            try {
+                                String responseString = response.body().string();
+                                Toast.makeText(activity, "Status = " + convertJsonToString(responseString), Toast.LENGTH_SHORT).show();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            if (isCreate) {
+                                Create.UpdateLabels();
+                            }
+                            Utils.removeLoadingScreen();
                         } else {
                             Log.d(TAG, "postRequest: onResponse: response is failed");
                         }
@@ -108,7 +122,54 @@ public class ConnectServerUtils {
         });
     }
 
-    //    TODO json criado porém ainda não foi testado
+    static void postRequestEditCheckCpf(final Activity activity, final String URL, final String cpf) {
+        Utils.startLoadingScreen(activity);
+        JSONObject json = convertCpfToJson(cpf);
+        RequestBody body = RequestBody.create(MediaType.parse("application/json"), String.valueOf(json));
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request request = new Request
+                .Builder()
+                .post(body)
+                .url(URL)
+                .build();
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(final Call call, final IOException e) {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "postRequest: onFailure");
+                        Toast.makeText(activity, "Something went wrong:" + " " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        call.cancel();
+                        Utils.removeLoadingScreen();
+                    }
+                });
+
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (response.isSuccessful()) {
+                            Log.d(TAG, "postRequest: isSuccessful");
+                            try {
+                                String responseString = response.body().string();
+                                Edit.updateCustomer(convertJsonToCustomer(responseString, false));
+                                Utils.removeLoadingScreen();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            Log.d(TAG, "postRequest: onResponse: response is failed");
+                        }
+                    }
+                });
+            }
+        });
+    }
+
     private static JSONObject convertCustomerToJson(Customer customer) {
         JSONObject customerJson = new JSONObject();
         try {
@@ -123,7 +184,7 @@ public class ConnectServerUtils {
         return customerJson;
     }
 
-    private static Customer convertJsonToCustomer(final String jsonString) {
+    private static Customer convertJsonToCustomer(final String jsonString, final boolean isSearch) {
         Customer customer = new Customer();
         JSONObject customerJson;
         JSONArray customerJsonLastPurchaseItems;
@@ -133,18 +194,24 @@ public class ConnectServerUtils {
             JSONArray json = new JSONArray(jsonString);
             customerJson = new JSONObject(json.getString(0));
 
-            customer.setName(customerJson.getString("name"));
-            customer.setBirthday(customerJson.getString("age"));
-            customer.setLastPurchaseDate(customerJson.getString("ultima_compra_data"));
-            customer.setLastPurchaseValue(customerJson.getString("ultima_compra_valor"));
+            if (isSearch) {
+                customer.setName(customerJson.getString("name"));
+                customer.setBirthday(customerJson.getString("age"));
+                customer.setLastPurchaseDate(customerJson.getString("ultima_compra_data"));
+                customer.setLastPurchaseValue(customerJson.getString("ultima_compra_valor"));
 
-            customerJsonLastPurchaseItems = new JSONArray(customerJson.getString("itens_comprados"));
-            for (int i = 0; i < customerJsonLastPurchaseItems.length(); i++) {
-                JSONObject items = new JSONObject(customerJsonLastPurchaseItems.getString(i));
-                lastPurchaseList.add(items.getString("item"));
+                customerJsonLastPurchaseItems = new JSONArray(customerJson.getString("itens_comprados"));
+                for (int i = 0; i < customerJsonLastPurchaseItems.length(); i++) {
+                    JSONObject items = new JSONObject(customerJsonLastPurchaseItems.getString(i));
+                    lastPurchaseList.add(items.getString("item"));
+                }
+
+                customer.setLastPurchaseList(lastPurchaseList);
+            } else {
+                customer.setName(customerJson.getString("name"));
+                customer.setCpf(customerJson.getString("cpf"));
+                customer.setBirthday(customerJson.getString("birthday"));
             }
-
-            customer.setLastPurchaseList(lastPurchaseList);
 
             // TODO terminar de criar para os dados sugeridos
             // testes:
@@ -156,5 +223,31 @@ public class ConnectServerUtils {
         }
 
         return customer;
+    }
+
+    private static JSONObject convertCpfToJson(String cpf) {
+        JSONObject customerJson = new JSONObject();
+        try {
+            customerJson.put("cpf", cpf);
+        } catch (JSONException e) {
+            Log.e(TAG, "Error in createJson: ", e);
+        }
+        return customerJson;
+    }
+
+    private static String convertJsonToString(final String jsonString) {
+        String string = "";
+        JSONObject customerJson;
+
+        try {
+            JSONArray json = new JSONArray(jsonString);
+            customerJson = new JSONObject(json.getString(0));
+
+            string = customerJson.getString("status");
+        } catch (JSONException e) {
+            Log.e(TAG, "Error in convertJsonToCustomer: ", e);
+        }
+
+        return string;
     }
 }

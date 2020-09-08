@@ -53,7 +53,7 @@ public class Create extends Fragment {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        createCustomer(v);
+                        createCustomer();
                     }
                 }
         );
@@ -68,7 +68,7 @@ public class Create extends Fragment {
         return view;
     }
 
-    private void createCustomer(View v) {
+    private void createCustomer() {
         Customer customer = new Customer();
         boolean error = false;
 
@@ -109,7 +109,7 @@ public class Create extends Fragment {
 
         // Show a toast with a error
         if (!error) {
-            ConnectServerUtils.postRequest(mActivity, URL_SEARCH, customer);
+            ConnectServerUtils.postRequestCreate(mActivity, URL_SEARCH, customer, true);
         } else {
             Toast.makeText(mActivity, "Check all fields and make sure they are not null", Toast.LENGTH_LONG).show();
         }

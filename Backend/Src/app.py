@@ -31,9 +31,24 @@ def create_customer():
     return jsonify(response)
 
 
+@app.route('/edit_check', methods=['POST'])
+def edit_check_customer():
+    data = request.get_json()
+
+    cpf = data['cpf']
+    response = Database.load_to_edit(cpf)
+    return jsonify(response)
+
+
 @app.route('/edit', methods=['POST'])
 def edit_customer():
-    return jsonify({'status': 'Missing Edit'})
+    data = request.get_json()
+
+    image = base64.b64decode(data['image'])
+    name = data['name']
+    cpf = data['cpf']
+    response = Database.update_customer(name, cpf, image)
+    return jsonify(response)
 
 
 if __name__ == "__main__":

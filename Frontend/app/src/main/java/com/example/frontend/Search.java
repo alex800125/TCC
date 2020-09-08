@@ -74,7 +74,7 @@ public class Search extends Fragment {
 
     private void searchCustomer(View v) {
         Log.d(TAG, "searchCustomer: call to Server");
-        ConnectServerUtils.getRequest(mActivity, URL_SEARCH);
+        ConnectServerUtils.getRequestSearch(mActivity, URL_SEARCH);
     }
 
     public static void updateCustomer(Customer customer) {

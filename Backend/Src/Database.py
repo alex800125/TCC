@@ -1,4 +1,6 @@
 import os
+import re
+
 import face_recognition
 import mysql.connector
 from datetime import datetime
@@ -16,10 +18,20 @@ def connect_mysql():
     )
 
 
+def keyFunc(afilename):
+    nondigits = re.compile("\D")
+    return int(nondigits.sub("", afilename))
+
+
 def load_database_images():
     print("Criando banco de imagens")
     folder = "../Known_Images/"
-    for filename in os.listdir(folder):
+    filenames = os.listdir(folder)
+
+    # TODO pode ser otimizado
+    list_images.clear()
+
+    for filename in sorted(filenames, key=keyFunc):
         print(filename)
         img = face_recognition.load_image_file(os.path.join(folder, filename))
         if img is not None:
@@ -41,14 +53,35 @@ def create_new_customer(name, cpf, birthday, image):
         print(count_max_id)
 
         create_new_customer_image(image, count_max_id)
-        list_id_customers.append(name)
+        list_id_customers.append(count_max_id)
         cursor.close()
     except mysql.connector.Error as error:
         print("Failed to insert table {}".format(error))
-        return {'status': False}
-    finally:
-        print("Success to insert a new customer!")
-        return {'status': True}
+        return {'status': 'false'}
+
+    return {'status': 'true'}
+
+
+def update_customer(name, cpf, image):
+    print("Atualizando cliente")
+    db = connect_mysql()
+    cursor = db.cursor()
+
+    try:
+        cursor.execute("UPDATE Clientes SET nome = '" + name + "' WHERE cpf = " + cpf)
+
+        db.commit()
+
+        cursor.execute("SELECT id FROM Clientes WHERE cpf = " + cpf)
+        id = cursor.fetchone()[0]
+
+        create_new_customer_image(image, id)
+        cursor.close()
+    except mysql.connector.Error as error:
+        print("Failed to insert table {}".format(error))
+        return {'status': 'false'}
+
+    return {'status': 'true'}
 
 
 def load_database_customer_id():
@@ -70,9 +103,41 @@ def create_new_customer_image(image, count_max_id):
     with open(file_path, 'wb') as f:
         f.write(image)
 
-    img = face_recognition.load_image_file(file_path)
-    new_face_encoding = face_recognition.face_encodings(img)[0]
-    list_images.append(new_face_encoding)
+    load_database_images()
+
+    # img = face_recognition.load_image_file(file_path)
+    # new_face_encoding = face_recognition.face_encodings(img)[0]
+    # list_images.append(new_face_encoding)
+
+
+def load_to_edit(cpf):
+    print("Carregando dados para editar")
+    folder = "../Known_Images/"
+    retorno = []
+
+    db = connect_mysql()
+    cursor = db.cursor()
+    cursor.execute("SELECT id, nome, data_nascimento FROM Clientes WHERE cpf = " + cpf)
+
+    # 'image': face_recognition.load_image_file(os.path.join(folder, x[0] + ".jpg")),
+
+    # print(cursor.)
+    # if cursor.rowcount is 0:
+    for x in cursor:
+        retorno.append({
+            'status': 'true',
+            'name': x[1],
+            'cpf': cpf,
+            'birthday': str(x[2])
+        })
+    cursor.close()
+    # else:
+    #     retorno.append({
+    #         'status': 'false'
+    #     })
+
+    print(retorno)
+    return retorno
 
 
 def search_customer(id_customer):
@@ -109,18 +174,25 @@ def create_json(id_customer, name):
 
 def search_produtos(id_purchase):
     print("procurando ultima compra")
-    sql_query = "SELECT Produtos.nome FROM Itens_comprados INNER JOIN Produtos ON Itens_comprados.id_produtos = Produtos.Id WHERE Itens_comprados.id_compras = " + str(
-        id_purchase)
     retorno = []
 
-    db = connect_mysql()
-    cursor = db.cursor()
-    cursor.execute(sql_query)
+    if id_purchase is not None:
+        sql_query = "SELECT Produtos.nome FROM Itens_comprados INNER JOIN Produtos ON Itens_comprados.id_produtos = Produtos.Id WHERE Itens_comprados.id_compras = " + str(
+            id_purchase)
 
-    for x in cursor:
+        db = connect_mysql()
+        cursor = db.cursor()
+        cursor.execute(sql_query)
+
+        for x in cursor:
+            retorno.append({
+                'item': x[0]
+            })
+    else:
         retorno.append({
-            'item': x[0]
+            'item': ''
         })
+
     print(retorno)
     return retorno
 
@@ -142,6 +214,7 @@ def get_list_images():
 
 
 def get_list_id_customes():
+    print(list_id_customers)
     return list_id_customers
 
 
