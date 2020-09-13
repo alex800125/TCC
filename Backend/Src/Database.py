@@ -1,3 +1,4 @@
+import base64
 import os
 import re
 
@@ -28,9 +29,6 @@ def load_database_images():
     folder = "../Known_Images/"
     filenames = os.listdir(folder)
 
-    # TODO pode ser otimizado
-    list_images.clear()
-
     for filename in sorted(filenames, key=keyFunc):
         print(filename)
         img = face_recognition.load_image_file(os.path.join(folder, filename))
@@ -43,6 +41,7 @@ def create_new_customer(name, cpf, birthday, image):
     print("Criando novo cliente")
     db = connect_mysql()
     cursor = db.cursor()
+    retorno = []
 
     try:
         cursor.execute("INSERT INTO Clientes (nome, cpf, data_nascimento) VALUES (%s, %s, %s)", (name, cpf, birthday))
@@ -53,19 +52,20 @@ def create_new_customer(name, cpf, birthday, image):
         print(count_max_id)
 
         create_new_customer_image(image, count_max_id)
-        list_id_customers.append(count_max_id)
         cursor.close()
+        retorno.append({'status': 'true'})
     except mysql.connector.Error as error:
         print("Failed to insert table {}".format(error))
-        return {'status': 'false'}
+        retorno.append({'status': 'false'})
 
-    return {'status': 'true'}
+    return retorno
 
 
 def update_customer(name, cpf, image):
     print("Atualizando cliente")
     db = connect_mysql()
     cursor = db.cursor()
+    retorno = []
 
     try:
         cursor.execute("UPDATE Clientes SET nome = '" + name + "' WHERE cpf = " + cpf)
@@ -77,11 +77,12 @@ def update_customer(name, cpf, image):
 
         create_new_customer_image(image, id)
         cursor.close()
+        retorno.append({'status': 'true'})
     except mysql.connector.Error as error:
         print("Failed to insert table {}".format(error))
-        return {'status': 'false'}
+        retorno.append({'status': 'false'})
 
-    return {'status': 'true'}
+    return retorno
 
 
 def load_database_customer_id():
@@ -95,19 +96,21 @@ def load_database_customer_id():
     cursor.close()
 
 
-def create_new_customer_image(image, count_max_id):
+def create_new_customer_image(image, id):
     print("Criando nova imagem")
 
-    file_path = "../Known_Images/" + str(count_max_id) + '.jpg'
+    file_path = "../Known_Images/" + str(id) + '.jpg'
     print(file_path)
     with open(file_path, 'wb') as f:
         f.write(image)
 
-    load_database_images()
+    # TODO verificar se um rosto foi reconhecida, em caso negativo, criar um jeito de retornar o erro
+    # e o motivo onde essa funcao e chamada
 
-    # img = face_recognition.load_image_file(file_path)
-    # new_face_encoding = face_recognition.face_encodings(img)[0]
-    # list_images.append(new_face_encoding)
+    list_id_customers.append(id)
+    img = face_recognition.load_image_file(file_path)
+    new_face_encoding = face_recognition.face_encodings(img)[0]
+    list_images.append(new_face_encoding)
 
 
 def load_to_edit(cpf):
@@ -128,7 +131,8 @@ def load_to_edit(cpf):
             'status': 'true',
             'name': x[1],
             'cpf': cpf,
-            'birthday': str(x[2])
+            'birthday': str(x[2]),
+            'image': str(load_image(x[0]))
         })
     cursor.close()
     # else:
@@ -140,9 +144,19 @@ def load_to_edit(cpf):
     return retorno
 
 
+def load_image(id):
+    print(id)
+    file_path = "../Known_Images/" + str(id) + ".jpg"
+    print(file_path)
+    with open(file_path, "rb") as img_file:
+        image = base64.b64encode(img_file.read())
+
+    return image
+
+
 def search_customer(id_customer):
     print("procurando cliente")
-    sql_query = "SELECT nome FROM Clientes WHERE id = " + id_customer
+    sql_query = "SELECT nome FROM Clientes WHERE id = " + str(id_customer)
 
     db = connect_mysql()
     cursor = db.cursor()
@@ -152,7 +166,7 @@ def search_customer(id_customer):
         return str(x[0])
 
 
-def create_json(id_customer, name):
+def create_json(id_customer, name, image):
     print("criando JSON de retorno")
     sql_query = "SELECT MAX(data), valor_total, id FROM Compras WHERE id_cliente = " + id_customer
     retorno = []
@@ -164,10 +178,11 @@ def create_json(id_customer, name):
     for x in cursor:
         retorno.append({
             'name': name,
-            'age': get_age_customer(id_customer),
+            'birthday': get_age_customer(id_customer),
             'ultima_compra_data': str(x[0]),
             'ultima_compra_valor': x[1],
-            'itens_comprados': search_produtos(x[2])
+            'itens_comprados': search_produtos(x[2]),
+            'image': str(image),
         })
     return retorno
 

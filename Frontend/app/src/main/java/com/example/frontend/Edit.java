@@ -49,11 +49,13 @@ public class Edit extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.edit, container, false);
         final View buttonEdit = view.findViewById(R.id.edit_button_customer);
+        final View buttonTakePicture = view.findViewById(R.id.edit_button_take_picture);
+
         mEditName = view.findViewById(R.id.edit_name);
         mEditBirthday = view.findViewById(R.id.edit_birthday);
         mEditCpf = view.findViewById(R.id.edit_cpf);
         mEditPreviewImage = view.findViewById(R.id.edit_preview_image);
-        final View buttonTakePicture = view.findViewById(R.id.edit_button_take_picture);
+
         mActivity = getActivity();
 
         mEditBirthday.setEnabled(false);
@@ -85,7 +87,7 @@ public class Edit extends Fragment {
         boolean error = false;
 
         if (mEditPreviewImage != null) {
-            customer.setImage(mPreviewImageBitmap);
+            customer.setImageBitmap(mPreviewImageBitmap);
             mEditPreviewImage.setBackground(null);
         } else {
             error = true;
@@ -163,22 +165,32 @@ public class Edit extends Fragment {
         mAlertDialog.show();
     }
 
-    public static void updateCustomer(Customer customer) {
-        TextInputEditText cpf = mActivity.findViewById(R.id.edit_cpf_text);
-        String fieldValue = customer.getCpf();
-        mEditCpf.setHintAnimationEnabled(fieldValue == null);
-        cpf.setText(fieldValue);
+    public static void updateCustomer(final Customer customer) {
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mPreviewImageBitmap = customer.getImageBitmap();
+                mEditPreviewImage.setImageBitmap(customer.getImageBitmap());
 
-        TextInputEditText name = mActivity.findViewById(R.id.edit_name_text);
-        fieldValue = customer.getName();
-        mEditName.setHintAnimationEnabled(fieldValue == null);
-        name.setText(fieldValue);
+                TextInputEditText cpf = mActivity.findViewById(R.id.edit_cpf_text);
+                String fieldValue = customer.getCpf();
+                mEditCpf.setHintAnimationEnabled(fieldValue == null);
+                cpf.setText(fieldValue);
 
-        TextInputEditText birthday = mActivity.findViewById(R.id.edit_birthday_text);
-        fieldValue = customer.getBirthday();
-        mEditBirthday.setHintAnimationEnabled(fieldValue == null);
-        birthday.setText(fieldValue);
+                TextInputEditText name = mActivity.findViewById(R.id.edit_name_text);
+                fieldValue = customer.getName();
+                mEditName.setHintAnimationEnabled(fieldValue == null);
+                name.setText(fieldValue);
 
-        mAlertDialog.setCancelable(true);
+                TextInputEditText birthday = mActivity.findViewById(R.id.edit_birthday_text);
+                fieldValue = customer.getBirthday();
+                mEditBirthday.setHintAnimationEnabled(fieldValue == null);
+                birthday.setText(fieldValue);
+
+                mAlertDialog.setCancelable(true);
+
+                Utils.removeLoadingScreen();
+            }
+        });
     }
 }

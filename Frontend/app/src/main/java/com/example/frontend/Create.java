@@ -73,7 +73,7 @@ public class Create extends Fragment {
         boolean error = false;
 
         if (mPreviewImageBitmap != null) {
-            customer.setImage(mPreviewImageBitmap);
+            customer.setImageBitmap(mPreviewImageBitmap);
             mCreatePreviewImage.setBackground(null);
         } else {
             error = true;

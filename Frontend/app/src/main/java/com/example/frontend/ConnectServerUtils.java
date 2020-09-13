@@ -1,15 +1,21 @@
 package com.example.frontend;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.io.StringReader;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -53,15 +59,22 @@ public class ConnectServerUtils {
                     public void run() {
                         if (response.isSuccessful()) {
 
-                            try {
-                                Log.d(TAG, "getRequest: isSuccessful");
-                                // TODO não consegue receber imagem em base 64 com essa função
-                                String responseString = response.body().string();
-                                Search.updateCustomer(convertJsonToCustomer(responseString, true));
-                                Utils.removeLoadingScreen();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                            Log.d(TAG, "getRequest: isSuccessful");
+                            // TODO não consegue receber imagem em base 64 com essa função
+                            Gson gson = new Gson();
+                            // erro android.os.NetworkOnMainThreadException ----> sugestao é tentar rodar fora da thread UI, testar amanha
+
+                            AsyncTask.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        StringReader reader = new StringReader(response.body().string());
+                                        Search.updateCustomer(convertJsonToCustomer(reader));
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
                         } else {
                             Log.d(TAG, "getRequest: onResponse: response is failed");
                         }
@@ -93,7 +106,6 @@ public class ConnectServerUtils {
                         Utils.removeLoadingScreen();
                     }
                 });
-
             }
 
             @Override
@@ -105,12 +117,22 @@ public class ConnectServerUtils {
                             Log.d(TAG, "postRequest: isSuccessful");
                             try {
                                 String responseString = response.body().string();
-                                Toast.makeText(activity, "Status = " + convertJsonToString(responseString), Toast.LENGTH_SHORT).show();
+                                if (convertJsonToString(responseString).equals("true")) {
+                                    if (isCreate) {
+                                        Create.UpdateLabels();
+                                        Toast.makeText(activity, "Customer created with successful", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(activity, "Customer updated with successful", Toast.LENGTH_LONG).show();
+                                    }
+                                } else {
+                                    if (isCreate) {
+                                        Toast.makeText(activity, "There was an error creating, please check the information again", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(activity, "There was an error updating, please check the information again", Toast.LENGTH_LONG).show();
+                                    }
+                                }
                             } catch (IOException e) {
                                 e.printStackTrace();
-                            }
-                            if (isCreate) {
-                                Create.UpdateLabels();
                             }
                             Utils.removeLoadingScreen();
                         } else {
@@ -154,13 +176,18 @@ public class ConnectServerUtils {
                     public void run() {
                         if (response.isSuccessful()) {
                             Log.d(TAG, "postRequest: isSuccessful");
-                            try {
-                                String responseString = response.body().string();
-                                Edit.updateCustomer(convertJsonToCustomer(responseString, false));
-                                Utils.removeLoadingScreen();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+
+                            AsyncTask.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        StringReader reader = new StringReader(response.body().string());
+                                        Edit.updateCustomer(convertJsonToCustomer(reader));
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
                         } else {
                             Log.d(TAG, "postRequest: onResponse: response is failed");
                         }
@@ -173,7 +200,7 @@ public class ConnectServerUtils {
     private static JSONObject convertCustomerToJson(Customer customer) {
         JSONObject customerJson = new JSONObject();
         try {
-            customerJson.put("image", Utils.convert(customer.getImage()));
+            customerJson.put("image", Utils.convert(customer.getImageBitmap()));
             customerJson.put("name", customer.getName());
             customerJson.put("cpf", customer.getCpf());
             customerJson.put("birthday", customer.getBirthday());
@@ -184,45 +211,28 @@ public class ConnectServerUtils {
         return customerJson;
     }
 
-    private static Customer convertJsonToCustomer(final String jsonString, final boolean isSearch) {
-        Customer customer = new Customer();
-        JSONObject customerJson;
-        JSONArray customerJsonLastPurchaseItems;
-        ArrayList<String> lastPurchaseList = new ArrayList<>();
+    private static Customer convertJsonToCustomer(final StringReader jsonStringReader) {
+        Gson gson = new Gson();
+        // gson convert the jsonStringReader in a customer item (the vector is necessary because this return a item's list)
+        Customer[] customer = gson.fromJson(jsonStringReader, Customer[].class);
 
         try {
-            JSONArray json = new JSONArray(jsonString);
-            customerJson = new JSONObject(json.getString(0));
+            // this is to remove the part of base64 string = b'...'
+            customer[0].getImageBase64().setCharAt(0, ' ');
+            customer[0].getImageBase64().setCharAt(1, ' ');
+            customer[0].getImageBase64().setCharAt(customer[0].getImageBase64().length() - 1, ' ');
 
-            if (isSearch) {
-                customer.setName(customerJson.getString("name"));
-                customer.setBirthday(customerJson.getString("age"));
-                customer.setLastPurchaseDate(customerJson.getString("ultima_compra_data"));
-                customer.setLastPurchaseValue(customerJson.getString("ultima_compra_valor"));
-
-                customerJsonLastPurchaseItems = new JSONArray(customerJson.getString("itens_comprados"));
-                for (int i = 0; i < customerJsonLastPurchaseItems.length(); i++) {
-                    JSONObject items = new JSONObject(customerJsonLastPurchaseItems.getString(i));
-                    lastPurchaseList.add(items.getString("item"));
-                }
-
-                customer.setLastPurchaseList(lastPurchaseList);
-            } else {
-                customer.setName(customerJson.getString("name"));
-                customer.setCpf(customerJson.getString("cpf"));
-                customer.setBirthday(customerJson.getString("birthday"));
-            }
-
-            // TODO terminar de criar para os dados sugeridos
-            // testes:
-            // byte[] decodedString = Base64.decode(customerJson.getString("image"), Base64.DEFAULT);
-            // Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-            // customer.setImage(decodedByte);
-        } catch (JSONException e) {
-            Log.e(TAG, "Error in convertJsonToCustomer: ", e);
+            byte[] stringBase64 = customer[0].getImageBase64().toString().getBytes("UTF-8");
+            byte[] decodedString = Base64.decode(stringBase64, Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            customer[0].setImageBitmap(decodedByte);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        return customer;
+        // TODO terminar de criar para os dados sugeridos
+
+        return customer[0];
     }
 
     private static JSONObject convertCpfToJson(String cpf) {
@@ -236,6 +246,7 @@ public class ConnectServerUtils {
     }
 
     private static String convertJsonToString(final String jsonString) {
+        // TODO uma possivel melhora será carregar o motivo do status ter vindo como falso
         String string = "";
         JSONObject customerJson;
 

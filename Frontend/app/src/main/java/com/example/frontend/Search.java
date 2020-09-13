@@ -13,13 +13,16 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.fragment.app.Fragment;
+
+import java.util.ArrayList;
 
 public class Search extends Fragment {
     @SuppressLint("StaticFieldLeak")
     private static Activity mActivity;
 
-//    private static AppCompatImageView mSearchPreviewImage;
+    //    private static AppCompatImageView mSearchPreviewImage;
     @SuppressLint("StaticFieldLeak")
     private static TextView mSearchName;
     @SuppressLint("StaticFieldLeak")
@@ -29,16 +32,21 @@ public class Search extends Fragment {
     @SuppressLint("StaticFieldLeak")
     private static TextView mLastPurchaseDate;
     @SuppressLint("StaticFieldLeak")
+    private static TextView mLastPurchaseNotExist;
+    @SuppressLint("StaticFieldLeak")
+    private static TextView mSuggestionNotExist;
+    @SuppressLint("StaticFieldLeak")
     private static ListView mListViewLastPurchase;
     @SuppressLint("StaticFieldLeak")
     private static ListView mListViewSuggestion;
+    private static AppCompatImageView mSearchPreviewImage;
 
     // for this link to work, ngrok must be active and the link must be updated
     final private static String URL_SEARCH = Constants.URL_NGROK + "/search";
 
     private final static String TAG = "Search";
 
-    String[] emptyArray = {""};
+    final String[] emptyArray = {""};
 
     @Nullable
     @Override
@@ -47,14 +55,15 @@ public class Search extends Fragment {
         mActivity = getActivity();
 
         View mButtonTakePicture = view.findViewById(R.id.search_button);
-        // TODO carregar imagem vinda do Servidor
-        // mSearchPreviewImage = mView.findViewById(R.id.search_preview_image);
+        mSearchPreviewImage = view.findViewById(R.id.search_preview_image);
         mSearchName = view.findViewById(R.id.search_name);
         mSearchAge = view.findViewById(R.id.search_age);
         mLastPurchaseDate = view.findViewById(R.id.search_last_buy_date);
         mLastPurchaseValue = view.findViewById(R.id.search_last_buy_value);
         mListViewLastPurchase = view.findViewById(R.id.search_last_buy_list);
         mListViewSuggestion = view.findViewById(R.id.search_suggestion_list);
+        mLastPurchaseNotExist = view.findViewById(R.id.search_last_buy_not_exist);
+        mSuggestionNotExist = view.findViewById(R.id.search_suggestion_not_exist);
 
         ArrayAdapter adapterLastPurchase = new ArrayAdapter<>(mActivity, R.layout.search_list_last_purchase, emptyArray);
         mListViewLastPurchase.setAdapter(adapterLastPurchase);
@@ -65,38 +74,60 @@ public class Search extends Fragment {
         mButtonTakePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchCustomer(v);
+                searchCustomer();
             }
         });
 
         return view;
     }
 
-    private void searchCustomer(View v) {
+    private void searchCustomer() {
         Log.d(TAG, "searchCustomer: call to Server");
         ConnectServerUtils.getRequestSearch(mActivity, URL_SEARCH);
     }
 
-    public static void updateCustomer(Customer customer) {
-        // mSearchPreviewImage.setImageBitmap(customer.getImage());
-        mSearchName.setText(customer.getName());
-        mSearchAge.setText(customer.getBirthday() + " anos");
-        mLastPurchaseDate.setText(customer.getLastPurchaseDate());
-        mLastPurchaseValue.setText("R$ " + customer.getLastPurchaseValue().replace(".",","));
-        ArrayAdapter adapterLastPurchase = new ArrayAdapter<>(mActivity, R.layout.search_list_last_purchase, customer.getLastPurchaseList());
-        mListViewLastPurchase.setAdapter(adapterLastPurchase);
+    public static void updateCustomer(final Customer customer) {
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mSearchPreviewImage.setImageBitmap(customer.getImageBitmap());
+                mSearchName.setText(customer.getName());
+                mSearchAge.setText(customer.getBirthday() + " anos");
 
-        // TODO falta os itens sugeridos
+                // verify if the customer exist a last buy
+                if (customer.getLastPurchaseValue() != null && !customer.getLastPurchaseDate().equals("None")) {
+                    mLastPurchaseDate.setVisibility(View.VISIBLE);
+                    mLastPurchaseValue.setVisibility(View.VISIBLE);
+                    mListViewLastPurchase.setVisibility(View.VISIBLE);
+                    mListViewSuggestion.setVisibility(View.VISIBLE);
+                    mSuggestionNotExist.setVisibility(View.INVISIBLE);
+                    mLastPurchaseNotExist.setVisibility(View.INVISIBLE);
+
+                    mLastPurchaseDate.setText(customer.getLastPurchaseDate());
+                    mLastPurchaseValue.setText("R$ " + customer.getLastPurchaseValue().replace(".", ","));
+
+                    // This is necessary because the Gson uses the class Item to create this array
+                    ArrayList<Item> ListItems = customer.getLastPurchaseList();
+                    ArrayList<String> ListItemsString = new ArrayList<>();
+                    for (Item item : ListItems) {
+                        ListItemsString.add(item.getItem());
+                    }
+
+                    ArrayAdapter adapterLastPurchase = new ArrayAdapter<>(mActivity, R.layout.search_list_last_purchase, ListItemsString);
+                    mListViewLastPurchase.setAdapter(adapterLastPurchase);
+
+                    // TODO falta os itens sugeridos
+                } else {
+                    mLastPurchaseDate.setVisibility(View.INVISIBLE);
+                    mLastPurchaseValue.setVisibility(View.INVISIBLE);
+                    mListViewLastPurchase.setVisibility(View.INVISIBLE);
+                    mListViewSuggestion.setVisibility(View.INVISIBLE);
+                    mSuggestionNotExist.setVisibility(View.VISIBLE);
+                    mLastPurchaseNotExist.setVisibility(View.VISIBLE);
+                }
+
+                Utils.removeLoadingScreen();
+            }
+        });
     }
-
-//        String postBodyText = "Hello";
-//        MediaType mediaType = MediaType.parse("text/plain; charset=utf-8");
-//        RequestBody postBody = RequestBody.create(mediaType, postBodyText);
-//
-//    private RequestBody buildRequestBody(String msg) {
-//        postBodyString = msg;
-//        mediaType = MediaType.parse("text/plain");
-//        requestBody = RequestBody.create(postBodyString, mediaType);
-//        return requestBody;
-//    }
 }

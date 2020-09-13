@@ -79,6 +79,18 @@
                 app:layout_constraintTop_toBottomOf="@id/search_age" />
 
             <TextView
+                android:id="@+id/search_last_buy_not_exist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_txt_item_start"
+                android:layout_marginTop="@dimen/margin_txt_top"
+                android:text="@string/search_text_last_purchase_not_exist"
+                android:textSize="@dimen/txt_item_font_size"
+                android:visibility="invisible"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_last_buy" />
+
+            <TextView
                 android:id="@+id/search_last_buy_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -122,6 +134,18 @@
                 android:textSize="@dimen/txt_font_size"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/search_last_buy_list" />
+
+            <TextView
+                android:id="@+id/search_suggestion_not_exist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_txt_item_start"
+                android:layout_marginTop="@dimen/margin_txt_top"
+                android:text="@string/search_text_last_purchase_not_exist"
+                android:textSize="@dimen/txt_item_font_size"
+                android:visibility="invisible"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/search_suggestion_txt" />
 
             <com.example.frontend.NonScrollListView
                 android:id="@+id/search_suggestion_list"

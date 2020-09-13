@@ -2,25 +2,52 @@ package com.example.frontend;
 
 import android.graphics.Bitmap;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 
 public class Customer {
 
-    private Bitmap image;
-    private String name;
-    private String cpf;
-    private String birthday;
-    private ArrayList<String> suggestions;
-    private String lastPurchaseDate;
-    private String lastPurchaseValue;
-    private ArrayList<String> lastPurchaseList;
+    @SerializedName("image")
+    private StringBuilder imageBase64;
 
-    public Bitmap getImage() {
-        return image;
+    private Bitmap imageBitmap;
+
+    @SerializedName("name")
+    private String name;
+
+    @SerializedName("cpf")
+    private String cpf;
+
+    @SerializedName("birthday")
+    private String birthday;
+
+    @SerializedName("-")
+    private ArrayList<String> suggestions;
+
+    @SerializedName("ultima_compra_data")
+    private String lastPurchaseDate;
+
+    @SerializedName("ultima_compra_valor")
+    private String lastPurchaseValue;
+
+    @SerializedName("itens_comprados")
+    private ArrayList<Item> lastPurchaseList;
+
+    public StringBuilder getImageBase64() {
+        return imageBase64;
     }
 
-    public void setImage(Bitmap image) {
-        this.image = image;
+    public void setImageBase64(StringBuilder imageBase64) {
+        this.imageBase64 = imageBase64;
+    }
+
+    public Bitmap getImageBitmap() {
+        return imageBitmap;
+    }
+
+    public void setImageBitmap(Bitmap imageBitmap) {
+        this.imageBitmap = imageBitmap;
     }
 
     public String getName() {
@@ -71,11 +98,24 @@ public class Customer {
         this.lastPurchaseValue = lastPurchaseValue;
     }
 
-    public ArrayList<String> getLastPurchaseList() {
+    public ArrayList<Item> getLastPurchaseList() {
         return lastPurchaseList;
     }
 
-    public void setLastPurchaseList(ArrayList<String> lastPurchaseList) {
+    public void setLastPurchaseList(ArrayList<Item> lastPurchaseList) {
         this.lastPurchaseList = lastPurchaseList;
+    }
+}
+
+class Item {
+    @SerializedName("item")
+    private String item;
+
+    public String getItem() {
+        return item;
+    }
+
+    public void setItem(String item) {
+        this.item = item;
     }
 }

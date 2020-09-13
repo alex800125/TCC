@@ -14,6 +14,7 @@
     <string name="search_text_last_purchase">Last purchase:</string>
     <string name="search_text_last_purchase_total">Total</string>
     <string name="search_text_last_purchase_date">Date</string>
+    <string name="search_text_last_purchase_not_exist">This customer never bought with us.</string>
 
     <!-- Create -->
     <string name="create_text_name">Name</string>

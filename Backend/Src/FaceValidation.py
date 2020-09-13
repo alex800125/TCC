@@ -70,12 +70,10 @@ def face_detection():
                 file_path = "../Recognized_Image/" + name + ".jpg"
                 cv2.imwrite(file_path, image)
 
-                # with open(file_path, "rb") as img_file:
-                #     imageBase64 = base64.b64encode(img_file.read())
-                #     imageSha256 = hashlib.sha256(imageBase64.rstrip()).hexdigest()
-                #     hashlib.sha256(imageBase64.encode()).hexdigest()
+                with open(file_path, "rb") as img_file:
+                    imageBase64 = base64.b64encode(img_file.read())
 
-                retorno = Db.create_json(id, name)
+                retorno = Db.create_json(id, name, imageBase64)
 
                 find_face = True
 
