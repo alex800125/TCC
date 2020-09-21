@@ -9,6 +9,7 @@
     <!-- Search -->
     <string name="search_text_name">Name:</string>
     <string name="search_text_age">Age:</string>
+    <string name="search_text_sex">Sex:</string>
     <string name="search_text_suggestion">Item suggestion:</string>
     <string name="search_customer">Search a customer!</string>
     <string name="search_text_last_purchase">Last purchase:</string>
@@ -19,12 +20,14 @@
     <!-- Create -->
     <string name="create_text_name">Name</string>
     <string name="create_text_birthday">Birthday</string>
+    <string name="create_text_sex">Sex</string>
     <string name="create_text_cpf">CPF</string>
     <string name="create_new_customer">Send info to create!</string>
 
     <!-- Edit -->
     <string name="edit_text_name">Name</string>
     <string name="edit_text_birthday">Birthday</string>
+    <string name="edit_text_sex">Sex</string>
     <string name="edit_text_cpf">CPF</string>
     <string name="edit_new_customer">Send info to edit!</string>
 

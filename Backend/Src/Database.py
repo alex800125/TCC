@@ -1,10 +1,10 @@
 import base64
 import os
 import re
-
+import Utils
+import Predict
 import face_recognition
 import mysql.connector
-from datetime import datetime
 
 list_images = []
 list_id_customers = []
@@ -37,14 +37,15 @@ def load_database_images():
             list_images.append(face_encoding)
 
 
-def create_new_customer(name, cpf, birthday, image):
+def create_new_customer(name, cpf, birthday, sexo, image):
     print("Criando novo cliente")
     db = connect_mysql()
     cursor = db.cursor()
     retorno = []
 
     try:
-        cursor.execute("INSERT INTO Clientes (nome, cpf, data_nascimento) VALUES (%s, %s, %s)", (name, cpf, birthday))
+        cursor.execute("INSERT INTO Clientes (nome, cpf, data_nascimento, sexo) VALUES (%s, %s, %s, %s)",
+                       (name, cpf, birthday, sexo))
         db.commit()
 
         cursor.execute("SELECT MAX(id) FROM Clientes")
@@ -120,7 +121,7 @@ def load_to_edit(cpf):
 
     db = connect_mysql()
     cursor = db.cursor()
-    cursor.execute("SELECT id, nome, data_nascimento FROM Clientes WHERE cpf = " + cpf)
+    cursor.execute("SELECT id, nome, data_nascimento, sexo FROM Clientes WHERE cpf = " + cpf)
 
     # 'image': face_recognition.load_image_file(os.path.join(folder, x[0] + ".jpg")),
 
@@ -132,6 +133,7 @@ def load_to_edit(cpf):
             'name': x[1],
             'cpf': cpf,
             'birthday': str(x[2]),
+            'sexo': str(x[3]),
             'image': str(load_image(x[0]))
         })
     cursor.close()
@@ -166,9 +168,21 @@ def search_customer(id_customer):
         return str(x[0])
 
 
+def get_sex_customer(id_customer):
+    print("pegando idade cliente")
+    sql_query = "SELECT sexo FROM Clientes WHERE id = " + str(id_customer)
+
+    db = connect_mysql()
+    cursor = db.cursor()
+    cursor.execute(sql_query)
+
+    for x in cursor:
+        return str(x[0])
+
+
 def create_json(id_customer, name, image):
     print("criando JSON de retorno")
-    sql_query = "SELECT MAX(data), valor_total, id FROM Compras WHERE id_cliente = " + id_customer
+    sql_query = "SELECT MAX(data), valor_total, id FROM Compras WHERE id_cliente = " + str(id_customer)
     retorno = []
 
     db = connect_mysql()
@@ -179,10 +193,12 @@ def create_json(id_customer, name, image):
         retorno.append({
             'name': name,
             'birthday': get_age_customer(id_customer),
+            'sexo': get_sex_customer(id_customer),
             'ultima_compra_data': str(x[0]),
             'ultima_compra_valor': x[1],
             'itens_comprados': search_produtos(x[2]),
             'image': str(image),
+            'suggestion': Predict.gerar_arvore_decisao("M", get_age_customer(id_customer))
         })
     return retorno
 
@@ -214,42 +230,39 @@ def search_produtos(id_purchase):
 
 def get_age_customer(id_customer):
     print("pegando idade cliente")
-    sql_query = "SELECT data_nascimento FROM Clientes WHERE id = " + id_customer
+    sql_query = "SELECT data_nascimento FROM Clientes WHERE id = " + str(id_customer)
 
     db = connect_mysql()
     cursor = db.cursor()
     cursor.execute(sql_query)
 
     for x in cursor:
-        return num_years(x[0])
+        return Utils.num_years(x[0])
 
 
 def get_list_images():
     return list_images
 
 
-def get_list_id_customes():
+def get_list_id_customers():
     print(list_id_customers)
     return list_id_customers
 
 
-def yearsago(years, from_date=None):
-    if from_date is None:
-        from_date = datetime.now()
-    try:
-        return from_date.replace(year=from_date.year - years)
-    except:
-        # Must be 2/29!
-        assert from_date.month == 2 and from_date.day == 29  # can be removed
-        return from_date.replace(month=2, day=28,
-                                 year=from_date.year - years)
+def get_produtos():
+    print("obtendo todos os produtos")
+    retorno = []
 
+    sql_query = "SELECT nome, valor FROM Produtos;"
 
-def num_years(begin, end=None):
-    if end is None:
-        end = datetime.now().date()
-    num_years = int((end - begin).days / 365.25)
-    if begin > yearsago(num_years, end):
-        return num_years - 1
-    else:
-        return num_years
+    db = connect_mysql()
+    cursor = db.cursor()
+    cursor.execute(sql_query)
+
+    for x in cursor:
+        retorno.append({
+            'produto': x[0],
+            'valor': x[1]
+        })
+
+    return retorno

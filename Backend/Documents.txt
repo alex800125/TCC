@@ -13,3 +13,6 @@ tutorial do face_regonition
 
 Pycharm - Cannot find declaration to go to
     Right click on the folders where you believe relevant code is located ->Mark Directory as-> Sources Root
+
+Parte da predição foi baseada nesse site
+    https://www.geeksforgeeks.org/decision-tree-implementation-python/

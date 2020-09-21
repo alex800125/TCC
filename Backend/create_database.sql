@@ -9,6 +9,7 @@ USE TCC;
 CREATE TABLE Clientes (
 	id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
+    sexo VARCHAR(1) NOT NULL,
     cpf varchar(11) NOT NULL UNIQUE,
     data_nascimento DATE NOT NULL);
 
@@ -40,11 +41,11 @@ ALTER TABLE Itens_comprados
 ADD FOREIGN KEY (id_produtos) REFERENCES Produtos(id);
 
 -- Populando Clientes
-INSERT INTO Clientes (nome, cpf, data_nascimento) VALUES ("Leonardo", "00000000000", "1997-05-25");
-INSERT INTO Clientes (nome, cpf, data_nascimento) VALUES ("Luan", "11111111111", "1995-01-13");
-INSERT INTO Clientes (nome, cpf, data_nascimento) VALUES ("Matheus", "22222222222", "1997-06-04");
-INSERT INTO Clientes (nome, cpf, data_nascimento) VALUES ("Paulo", "33333333333", "1990-10-22");
-INSERT INTO Clientes (nome, cpf, data_nascimento) VALUES ("Alex", "44444444444", "1996-09-26");
+INSERT INTO Clientes (nome, cpf, data_nascimento, sexo) VALUES ("Leonardo", "00000000000", "1997-05-25", "M");
+INSERT INTO Clientes (nome, cpf, data_nascimento, sexo) VALUES ("Luan", "11111111111", "1995-01-13", "M");
+INSERT INTO Clientes (nome, cpf, data_nascimento, sexo) VALUES ("Matheus", "22222222222", "1997-06-04", "M");
+INSERT INTO Clientes (nome, cpf, data_nascimento, sexo) VALUES ("Paulo", "33333333333", "1990-10-22", "M");
+INSERT INTO Clientes (nome, cpf, data_nascimento, sexo) VALUES ("Alex", "44444444444", "1996-09-26", "M");
 
 -- Populando Compras
 INSERT INTO Compras (id_cliente, data, valor_total) VALUES (1, "1997-05-25", 530.5);
@@ -84,6 +85,26 @@ INSERT INTO Produtos (nome, valor) VALUES ("Calça Xadrez 2", 23.9);
 INSERT INTO Produtos (nome, valor) VALUES ("Calça Xadrez 3", 89.5);
 INSERT INTO Produtos (nome, valor) VALUES ("Calça Polo", 51.0);
 INSERT INTO Produtos (nome, valor) VALUES ("Calça Polo 1", 159.9);
+INSERT INTO Produtos (nome, valor) VALUES ("Sunga 1", 39.9);
+INSERT INTO Produtos (nome, valor) VALUES ("Sunga 2", 29.9);
+INSERT INTO Produtos (nome, valor) VALUES ("Sunga 3", 25.9);
+INSERT INTO Produtos (nome, valor) VALUES ("Sunga 4", 49.9);
+INSERT INTO Produtos (nome, valor) VALUES ("Sunga 5", 15.5);
+INSERT INTO Produtos (nome, valor) VALUES ("Sunga 6", 79.9);
+INSERT INTO Produtos (nome, valor) VALUES ("Chinelo 1", 39.9);
+INSERT INTO Produtos (nome, valor) VALUES ("Chinelo 2", 89.9);
+INSERT INTO Produtos (nome, valor) VALUES ("Chinelo 3", 119.9);
+INSERT INTO Produtos (nome, valor) VALUES ("Chinelo 4", 95);
+INSERT INTO Produtos (nome, valor) VALUES ("Chinelo 5", 55.4);
+INSERT INTO Produtos (nome, valor) VALUES ("Sandalia 1", 59.9);
+INSERT INTO Produtos (nome, valor) VALUES ("Sandalia 2", 71.9);
+INSERT INTO Produtos (nome, valor) VALUES ("Sandalia 3", 150);
+INSERT INTO Produtos (nome, valor) VALUES ("Sandalia 4", 259.9);
+INSERT INTO Produtos (nome, valor) VALUES ("Sandalia 5", 100);
+INSERT INTO Produtos (nome, valor) VALUES ("Camisa 1", 59.9);
+INSERT INTO Produtos (nome, valor) VALUES ("Camisa 2", 49.9);
+INSERT INTO Produtos (nome, valor) VALUES ("Camisa 3", 39.9);
+INSERT INTO Produtos (nome, valor) VALUES ("Camisa 4", 29.9);
 
 -- Populando Itens_comprados
 INSERT INTO Itens_comprados (id_compras, id_produtos, valor) VALUES (1, 22, 159.9);

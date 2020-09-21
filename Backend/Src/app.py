@@ -1,8 +1,8 @@
 import base64
 from flask import Flask, request, jsonify
-import datetime
 import FaceValidation
 import Database
+import Predict
 
 app = Flask(__name__)
 
@@ -26,7 +26,8 @@ def create_customer():
     name = data['name']
     cpf = data['cpf']
     birthday = str(data['birthday'])
-    response = Database.create_new_customer(name, cpf, birthday, image)
+    sexo = data['sexo']
+    response = Database.create_new_customer(name, cpf, birthday, sexo, image)
 
     return jsonify(response)
 
@@ -48,6 +49,18 @@ def edit_customer():
     name = data['name']
     cpf = data['cpf']
     response = Database.update_customer(name, cpf, image)
+    return jsonify(response)
+
+
+@app.route('/predict', methods=['GET'])
+def predict_create_training():
+    response = Predict.criar_json_predict()
+    return jsonify(response)
+
+
+@app.route('/arvore_decisao', methods=['GET'])
+def predict_test():
+    response = Predict.gerar_arvore_decisao()
     return jsonify(response)
 
 

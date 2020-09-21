@@ -33,6 +33,8 @@ public class Create extends Fragment {
     @SuppressLint("StaticFieldLeak")
     private static TextInputLayout mCreateName;
     @SuppressLint("StaticFieldLeak")
+    private static TextInputLayout mCreateSex;
+    @SuppressLint("StaticFieldLeak")
     private static TextInputLayout mCreateCpf;
     private static AppCompatImageView mCreatePreviewImage;
     private static Bitmap mPreviewImageBitmap;
@@ -46,6 +48,7 @@ public class Create extends Fragment {
         mCreatePreviewImage = view.findViewById(R.id.create_preview_image);
         mCreateName = view.findViewById(R.id.create_name);
         mCreateBirthday = view.findViewById(R.id.create_birthday);
+        mCreateSex = view.findViewById(R.id.create_sex);
         mCreateCpf = view.findViewById(R.id.create_cpf);
         mActivity = getActivity();
 
@@ -98,6 +101,15 @@ public class Create extends Fragment {
             mCreateBirthday.setError("You need to enter a Birthday");
         }
 
+        String sex = Objects.requireNonNull(mCreateSex.getEditText()).getText().toString().trim().toUpperCase();
+        if (!sex.isEmpty() && (sex.equals("M") || sex.equals("F"))) {
+            mCreateSex.setError(null);
+            customer.setSex(sex);
+        } else {
+            error = true;
+            mCreateSex.setError("You need to enter a Sex");
+        }
+
         String cpf = Objects.requireNonNull(mCreateCpf.getEditText()).getText().toString().trim();
         if (!cpf.isEmpty()) {
             mCreateCpf.setError(null);
@@ -120,6 +132,7 @@ public class Create extends Fragment {
     public static void UpdateLabels() {
         mCreateName.setError(null);
         mCreateBirthday.setError(null);
+        mCreateSex.setError(null);
         mCreateCpf.setError(null);
         mCreatePreviewImage.setBackground(null);
         mCreatePreviewImage.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.person));

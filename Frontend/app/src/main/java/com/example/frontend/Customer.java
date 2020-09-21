@@ -22,8 +22,8 @@ public class Customer {
     @SerializedName("birthday")
     private String birthday;
 
-    @SerializedName("-")
-    private ArrayList<String> suggestions;
+    @SerializedName("suggestion")
+    private ArrayList<ItemSuggestion> suggestions;
 
     @SerializedName("ultima_compra_data")
     private String lastPurchaseDate;
@@ -33,6 +33,9 @@ public class Customer {
 
     @SerializedName("itens_comprados")
     private ArrayList<Item> lastPurchaseList;
+
+    @SerializedName("sexo")
+    private String sex;
 
     public StringBuilder getImageBase64() {
         return imageBase64;
@@ -74,11 +77,11 @@ public class Customer {
         this.birthday = birthday;
     }
 
-    public ArrayList<String> getSuggestions() {
+    public ArrayList<ItemSuggestion> getSuggestions() {
         return suggestions;
     }
 
-    public void setSuggestions(ArrayList<String> suggestions) {
+    public void setSuggestions(ArrayList<ItemSuggestion> suggestions) {
         this.suggestions = suggestions;
     }
 
@@ -105,6 +108,14 @@ public class Customer {
     public void setLastPurchaseList(ArrayList<Item> lastPurchaseList) {
         this.lastPurchaseList = lastPurchaseList;
     }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
 }
 
 class Item {
@@ -117,5 +128,18 @@ class Item {
 
     public void setItem(String item) {
         this.item = item;
+    }
+}
+
+class ItemSuggestion {
+    @SerializedName("suggestion_item")
+    private String itemSuggestion;
+
+    public String getItemSuggestion() {
+        return itemSuggestion;
+    }
+
+    public void setItemSuggestion(String item) {
+        this.itemSuggestion = item;
     }
 }

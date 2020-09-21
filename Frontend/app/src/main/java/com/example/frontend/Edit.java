@@ -38,6 +38,8 @@ public class Edit extends Fragment {
     @SuppressLint("StaticFieldLeak")
     private static TextInputLayout mEditBirthday;
     @SuppressLint("StaticFieldLeak")
+    private static TextInputLayout mEditSex;
+    @SuppressLint("StaticFieldLeak")
     private static TextInputLayout mEditName;
     @SuppressLint("StaticFieldLeak")
     private static TextInputLayout mEditCpf;
@@ -53,6 +55,7 @@ public class Edit extends Fragment {
 
         mEditName = view.findViewById(R.id.edit_name);
         mEditBirthday = view.findViewById(R.id.edit_birthday);
+        mEditSex = view.findViewById(R.id.edit_sex);
         mEditCpf = view.findViewById(R.id.edit_cpf);
         mEditPreviewImage = view.findViewById(R.id.edit_preview_image);
 
@@ -101,6 +104,15 @@ public class Edit extends Fragment {
         } else {
             error = true;
             mEditName.setError("You need to enter a name");
+        }
+
+        String sex = Objects.requireNonNull(mEditSex.getEditText()).getText().toString().trim().toUpperCase();
+        if (!sex.isEmpty() && (sex.equals("M") || sex.equals("F"))) {
+            mEditSex.setError(null);
+            customer.setSex(sex);
+        } else {
+            error = true;
+            mEditSex.setError("You need to enter a Sex");
         }
 
         String cpf = Objects.requireNonNull(mEditCpf.getEditText()).getText().toString().trim();
@@ -186,6 +198,11 @@ public class Edit extends Fragment {
                 fieldValue = customer.getBirthday();
                 mEditBirthday.setHintAnimationEnabled(fieldValue == null);
                 birthday.setText(fieldValue);
+
+                TextInputEditText sex = mActivity.findViewById(R.id.edit_sex_text);
+                fieldValue = customer.getSex();
+                mEditSex.setHintAnimationEnabled(fieldValue == null);
+                sex.setText(fieldValue);
 
                 mAlertDialog.setCancelable(true);
 

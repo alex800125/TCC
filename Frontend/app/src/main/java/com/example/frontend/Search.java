@@ -28,13 +28,13 @@ public class Search extends Fragment {
     @SuppressLint("StaticFieldLeak")
     private static TextView mSearchAge;
     @SuppressLint("StaticFieldLeak")
+    private static TextView mSearchSex;
+    @SuppressLint("StaticFieldLeak")
     private static TextView mLastPurchaseValue;
     @SuppressLint("StaticFieldLeak")
     private static TextView mLastPurchaseDate;
     @SuppressLint("StaticFieldLeak")
     private static TextView mLastPurchaseNotExist;
-    @SuppressLint("StaticFieldLeak")
-    private static TextView mSuggestionNotExist;
     @SuppressLint("StaticFieldLeak")
     private static ListView mListViewLastPurchase;
     @SuppressLint("StaticFieldLeak")
@@ -58,12 +58,12 @@ public class Search extends Fragment {
         mSearchPreviewImage = view.findViewById(R.id.search_preview_image);
         mSearchName = view.findViewById(R.id.search_name);
         mSearchAge = view.findViewById(R.id.search_age);
+        mSearchSex = view.findViewById(R.id.search_sexo);
         mLastPurchaseDate = view.findViewById(R.id.search_last_buy_date);
         mLastPurchaseValue = view.findViewById(R.id.search_last_buy_value);
         mListViewLastPurchase = view.findViewById(R.id.search_last_buy_list);
         mListViewSuggestion = view.findViewById(R.id.search_suggestion_list);
         mLastPurchaseNotExist = view.findViewById(R.id.search_last_buy_not_exist);
-        mSuggestionNotExist = view.findViewById(R.id.search_suggestion_not_exist);
 
         ArrayAdapter adapterLastPurchase = new ArrayAdapter<>(mActivity, R.layout.search_list_last_purchase, emptyArray);
         mListViewLastPurchase.setAdapter(adapterLastPurchase);
@@ -94,13 +94,27 @@ public class Search extends Fragment {
                 mSearchName.setText(customer.getName());
                 mSearchAge.setText(customer.getBirthday() + " anos");
 
+                if (customer.getSex().equals("M")) {
+                    mSearchSex.setText("Masculino");
+                } else {
+                    mSearchSex.setText("Feminino");
+                }
+
+                // This is necessary because the Gson uses the class Item to create this array
+                ArrayList<ItemSuggestion> ListItemsS = customer.getSuggestions();
+                ArrayList<String> ListItemsSuggestion = new ArrayList<>();
+                for (ItemSuggestion item : ListItemsS) {
+                    ListItemsSuggestion.add(item.getItemSuggestion());
+                }
+
+                ArrayAdapter adapterSuggestion = new ArrayAdapter<>(mActivity, R.layout.search_list_last_purchase, ListItemsSuggestion);
+                mListViewSuggestion.setAdapter(adapterSuggestion);
+
                 // verify if the customer exist a last buy
                 if (customer.getLastPurchaseValue() != null && !customer.getLastPurchaseDate().equals("None")) {
                     mLastPurchaseDate.setVisibility(View.VISIBLE);
                     mLastPurchaseValue.setVisibility(View.VISIBLE);
                     mListViewLastPurchase.setVisibility(View.VISIBLE);
-                    mListViewSuggestion.setVisibility(View.VISIBLE);
-                    mSuggestionNotExist.setVisibility(View.INVISIBLE);
                     mLastPurchaseNotExist.setVisibility(View.INVISIBLE);
 
                     mLastPurchaseDate.setText(customer.getLastPurchaseDate());
@@ -115,14 +129,10 @@ public class Search extends Fragment {
 
                     ArrayAdapter adapterLastPurchase = new ArrayAdapter<>(mActivity, R.layout.search_list_last_purchase, ListItemsString);
                     mListViewLastPurchase.setAdapter(adapterLastPurchase);
-
-                    // TODO falta os itens sugeridos
                 } else {
                     mLastPurchaseDate.setVisibility(View.INVISIBLE);
                     mLastPurchaseValue.setVisibility(View.INVISIBLE);
                     mListViewLastPurchase.setVisibility(View.INVISIBLE);
-                    mListViewSuggestion.setVisibility(View.INVISIBLE);
-                    mSuggestionNotExist.setVisibility(View.VISIBLE);
                     mLastPurchaseNotExist.setVisibility(View.VISIBLE);
                 }
 

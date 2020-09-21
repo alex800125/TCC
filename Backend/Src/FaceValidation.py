@@ -3,7 +3,6 @@ import face_recognition
 import cv2
 import numpy as np
 import base64
-import hashlib
 
 Db.load_database_customer_id()
 Db.load_database_images()
@@ -42,7 +41,7 @@ def face_detection():
                 face_distances = face_recognition.face_distance(Db.get_list_images(), face_encoding)
                 best_match_index = np.argmin(face_distances)
                 if matches[best_match_index]:
-                    id = Db.get_list_id_customes()[best_match_index]
+                    id = Db.get_list_id_customers()[best_match_index]
                     face_id.append(id)
 
         process_this_frame = not process_this_frame

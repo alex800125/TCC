@@ -58,12 +58,7 @@ public class ConnectServerUtils {
                     @Override
                     public void run() {
                         if (response.isSuccessful()) {
-
                             Log.d(TAG, "getRequest: isSuccessful");
-                            // TODO não consegue receber imagem em base 64 com essa função
-                            Gson gson = new Gson();
-                            // erro android.os.NetworkOnMainThreadException ----> sugestao é tentar rodar fora da thread UI, testar amanha
-
                             AsyncTask.execute(new Runnable() {
                                 @Override
                                 public void run() {
@@ -204,6 +199,7 @@ public class ConnectServerUtils {
             customerJson.put("name", customer.getName());
             customerJson.put("cpf", customer.getCpf());
             customerJson.put("birthday", customer.getBirthday());
+            customerJson.put("sexo", customer.getSex());
 
         } catch (JSONException e) {
             Log.e(TAG, "Error in createJson: ", e);
@@ -229,8 +225,6 @@ public class ConnectServerUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        // TODO terminar de criar para os dados sugeridos
 
         return customer[0];
     }

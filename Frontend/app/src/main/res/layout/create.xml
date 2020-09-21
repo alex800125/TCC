@@ -55,6 +55,23 @@
                     android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Sex -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/create_sex"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_top"
+                android:clickable="true"
+                android:hint="@string/create_text_sex"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/create_birthday">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLength="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
             <!-- CPF -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/create_cpf"
@@ -63,7 +80,7 @@
                 android:layout_marginTop="@dimen/margin_top"
                 android:hint="@string/create_text_cpf"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/create_birthday">
+                app:layout_constraintTop_toBottomOf="@id/create_sex">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
