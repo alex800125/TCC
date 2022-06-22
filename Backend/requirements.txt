@@ -15,7 +15,7 @@ jsonify==0.5
 MarkupSafe==1.1.1
 mysql-connector==2.2.9
 mysql-connector-python==8.0.20
-numpy==1.18.1
+numpy==1.22.0
 opencv-python==4.2.0.32
 pandas==1.1.2
 Pillow==7.0.0
